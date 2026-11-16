@@ -120,9 +120,9 @@ export default function Inicio() {
     if (carregando) return <Carregando texto="Carregando publicações…" />;
     if (erro) return <EstadoErro mensagem={erro} aoTentarDeNovo={carregar} />;
     return aba === 'recentes' ? (
-      <EstadoVazio titulo="Ainda não há publicações" mensagem="Seja a primeira pessoa a contar o que está construindo!" />
+      <EstadoVazio icone="chatbubbles-outline" titulo="Ainda não há publicações" mensagem="Seja a primeira pessoa a contar o que está construindo!" />
     ) : (
-      <EstadoVazio titulo="Você ainda não publicou" mensagem="Use a aba Publicar para compartilhar um projeto, dúvida ou conquista." />
+      <EstadoVazio icone="create-outline" titulo="Você ainda não publicou" mensagem="Use a aba Publicar para compartilhar um projeto, dúvida ou conquista." />
     );
   }
 

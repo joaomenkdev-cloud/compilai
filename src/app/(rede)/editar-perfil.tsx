@@ -7,7 +7,7 @@ import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { CampoTexto } from '@/components/CampoTexto';
 import { EstadoErro } from '@/components/EstadoErro';
 import { Tela } from '@/components/Tela';
-import { cores, espaco, fonte, raio } from '@/constants/tema';
+import { cores, espaco, fonte, raio, familia } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { mensagemDeErro } from '@/lib/erros';
 import { atualizarPerfil, BIO_MAXIMA, NOME_MAXIMO } from '@/services/profileService';
@@ -120,5 +120,5 @@ const estilos = StyleSheet.create({
     padding: espaco.md,
     backgroundColor: '#E8F5EE',
   },
-  textoSucesso: { ...fonte.corpo, fontWeight: '700', color: cores.sucesso },
+  textoSucesso: { ...fonte.corpo, fontFamily: familia.negrito, color: cores.sucesso },
 });

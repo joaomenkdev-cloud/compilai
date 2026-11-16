@@ -10,7 +10,7 @@ import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
 import { PostCard } from '@/components/PostCard';
-import { areaToque, cores, espaco, fonte, raio } from '@/constants/tema';
+import { areaToque, cores, espaco, fonte, raio, sombra, familia } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
 import { mensagemDeErro } from '@/lib/erros';
@@ -118,12 +118,13 @@ export default function Explorar() {
     if (termoBuscado === null) {
       return (
         <EstadoVazio
+          icone={aba === 'pessoas' ? 'people-outline' : 'search-outline'}
           titulo={aba === 'pessoas' ? 'Encontre colegas' : 'Encontre publicações'}
           mensagem="Digite um termo e toque na lupa."
         />
       );
     }
-    return <EstadoVazio titulo="Nenhum resultado" mensagem={`Nada encontrado para "${termoBuscado}". Ajuste o termo e tente de novo.`} />;
+    return <EstadoVazio icone="file-tray-outline" titulo="Nenhum resultado" mensagem={`Nada encontrado para "${termoBuscado}". Ajuste o termo e tente de novo.`} />;
   }
 
   if (aba === 'pessoas') {
@@ -191,6 +192,7 @@ const estilos = StyleSheet.create({
     borderRadius: raio.campo,
     backgroundColor: cores.superficie,
     paddingHorizontal: espaco.md,
+    fontFamily: familia.regular,
     fontSize: 16,
     color: cores.texto,
   },
@@ -211,8 +213,7 @@ const estilos = StyleSheet.create({
     padding: espaco.md,
     backgroundColor: cores.superficie,
     borderRadius: raio.card,
-    borderWidth: 1,
-    borderColor: cores.borda,
+    ...sombra.card,
   },
   pressionado: { opacity: 0.8 },
   textoPessoa: { flex: 1, gap: 2 },

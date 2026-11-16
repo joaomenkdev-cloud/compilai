@@ -13,6 +13,7 @@ Enunciado: [`docs/PAM_II_Atividade_Rede_Social.pdf`](docs/PAM_II_Atividade_Rede_
 | App | React Native + **Expo SDK 58** + Expo Router + TypeScript |
 | Nuvem | **Supabase Free** (Auth por e-mail/senha + PostgreSQL + RLS) |
 | Aparelho | **SQLite** (`expo-sqlite`): rascunho e último feed · **AsyncStorage**: sessão (via SDK do Supabase) |
+| Visual | Componentes próprios com `StyleSheet` (sem UI kit) · fontes **Space Grotesk** (títulos) e **DM Sans** (texto) via `@expo-google-fonts` · ícones Ionicons |
 
 ---
 

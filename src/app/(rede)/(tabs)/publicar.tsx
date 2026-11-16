@@ -9,7 +9,7 @@ import { CampoTexto } from '@/components/CampoTexto';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
 import { Tela } from '@/components/Tela';
-import { cores, espaco, fonte, raio } from '@/constants/tema';
+import { cores, espaco, fonte, raio, familia, sombra } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { horaCurta } from '@/lib/datas';
 import { ehErroDeRede, mensagemDeErro } from '@/lib/erros';
@@ -149,7 +149,7 @@ export default function Publicar() {
           <Text style={estilos.dica}>O rascunho fica só neste aparelho e só para a sua conta.</Text>
         </>
       ) : rascunho === undefined ? null : rascunho === null ? (
-        <EstadoVazio titulo="Nenhum rascunho salvo" mensagem="Na aba Escrever, toque em Salvar rascunho para guardar o texto aqui." />
+        <EstadoVazio icone="document-outline" titulo="Nenhum rascunho salvo" mensagem="Na aba Escrever, toque em Salvar rascunho para guardar o texto aqui." />
       ) : (
         <>
           <View style={estilos.cartaoRascunho}>
@@ -167,7 +167,7 @@ export default function Publicar() {
 const estilos = StyleSheet.create({
   campoGrande: { minHeight: 160, paddingTop: espaco.md },
   contador: { ...fonte.pequena, color: cores.textoSuave, textAlign: 'right', marginTop: -espaco.sm },
-  contadorErro: { color: cores.erro, fontWeight: '700' },
+  contadorErro: { color: cores.erro, fontFamily: familia.negrito },
   dica: { ...fonte.pequena, color: cores.textoSuave, textAlign: 'center' },
   sucesso: {
     borderWidth: 1.5,
@@ -176,12 +176,11 @@ const estilos = StyleSheet.create({
     padding: espaco.md,
     backgroundColor: '#E8F5EE',
   },
-  textoSucesso: { ...fonte.corpo, fontWeight: '700', color: cores.sucesso },
+  textoSucesso: { ...fonte.corpo, fontFamily: familia.negrito, color: cores.sucesso },
   cartaoRascunho: {
     backgroundColor: cores.superficie,
     borderRadius: raio.card,
-    borderWidth: 1,
-    borderColor: cores.borda,
+    ...sombra.card,
     padding: espaco.lg,
     gap: espaco.sm,
   },

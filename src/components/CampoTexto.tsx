@@ -1,6 +1,8 @@
-import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
 
-import { cores, espaco, fonte, raio } from '@/constants/tema';
+import { cores, espaco, familia, fonte, raio } from '@/constants/tema';
 
 type Props = TextInputProps & {
   /** Rótulo sempre visível (não só placeholder). */
@@ -9,39 +11,76 @@ type Props = TextInputProps & {
   erro?: string | null;
 };
 
-// Campo de texto com rótulo persistente e mensagem de erro junto ao campo.
-export function CampoTexto({ rotulo, erro, style, ...resto }: Props) {
+// Campo de texto com rótulo persistente, borda de foco e erro junto ao campo.
+// Campos de senha ganham o botão "mostrar/ocultar".
+export function CampoTexto({ rotulo, erro, style, secureTextEntry, onFocus, onBlur, ...resto }: Props) {
+  const [focado, setFocado] = useState(false);
+  const [senhaVisivel, setSenhaVisivel] = useState(false);
+  const ehSenha = !!secureTextEntry;
+
   return (
     <View style={estilos.caixa}>
       <Text style={estilos.rotulo}>{rotulo}</Text>
-      <TextInput
-        accessibilityLabel={rotulo}
-        placeholderTextColor={cores.textoSuave}
-        style={[estilos.campo, erro ? estilos.campoComErro : null, style]}
-        {...resto}
-      />
+      <View style={[estilos.moldura, focado && estilos.molduraFoco, erro ? estilos.molduraErro : null]}>
+        <TextInput
+          accessibilityLabel={rotulo}
+          placeholderTextColor={cores.textoSuave}
+          secureTextEntry={ehSenha && !senhaVisivel}
+          onFocus={(e) => {
+            setFocado(true);
+            onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setFocado(false);
+            onBlur?.(e);
+          }}
+          style={[estilos.campo, style]}
+          {...resto}
+        />
+        {ehSenha ? (
+          <Pressable
+            onPress={() => setSenhaVisivel((v) => !v)}
+            accessibilityRole="button"
+            accessibilityLabel={senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'}
+            hitSlop={8}
+            style={estilos.olho}
+          >
+            <Ionicons name={senhaVisivel ? 'eye-off-outline' : 'eye-outline'} size={22} color={cores.textoSuave} />
+          </Pressable>
+        ) : null}
+      </View>
       {erro ? (
-        <Text style={estilos.erro} accessibilityLiveRegion="polite">
-          {erro}
-        </Text>
+        <View style={estilos.linhaErro} accessibilityLiveRegion="polite">
+          <Ionicons name="alert-circle" size={16} color={cores.erro} />
+          <Text style={estilos.erro}>{erro}</Text>
+        </View>
       ) : null}
     </View>
   );
 }
 
 const estilos = StyleSheet.create({
-  caixa: { gap: espaco.xs },
+  caixa: { gap: 6 },
   rotulo: { ...fonte.rotulo, color: cores.texto },
-  campo: {
-    minHeight: 48,
+  moldura: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1.5,
     borderColor: cores.borda,
     borderRadius: raio.campo,
     backgroundColor: cores.superficie,
+  },
+  molduraFoco: { borderColor: cores.primaria, borderWidth: 2 },
+  molduraErro: { borderColor: cores.erro },
+  campo: {
+    flex: 1,
+    minHeight: 50,
     paddingHorizontal: espaco.md,
+    fontFamily: familia.regular,
     fontSize: 16,
     color: cores.texto,
   },
-  campoComErro: { borderColor: cores.erro },
-  erro: { ...fonte.pequena, color: cores.erro },
+  olho: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  linhaErro: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  erro: { ...fonte.pequena, fontFamily: familia.medio, color: cores.erro, flex: 1 },
 });

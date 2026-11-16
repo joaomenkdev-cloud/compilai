@@ -1,3 +1,6 @@
+import { DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
+import { SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -19,8 +22,17 @@ abrirBanco().catch(() => {});
 // Ao sair, o histórico das telas privadas é descartado, então Voltar não as reabre.
 function Rotas() {
   const { usuario, carregando } = useAuth();
+  // Fontes do tema (Space Grotesk nos títulos, DM Sans no texto). Vêm junto com o app,
+  // então carregam mesmo sem internet. Se falharem, seguimos com a fonte do sistema.
+  const [fontesProntas, erroFontes] = useFonts({
+    SpaceGrotesk_600SemiBold,
+    SpaceGrotesk_700Bold,
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_700Bold,
+  });
 
-  if (carregando) {
+  if (carregando || (!fontesProntas && !erroFontes)) {
     // Troca a splash nativa pela tela de marca em React (mesma cor de fundo).
     return <TelaMarca aoMontar={() => SplashScreen.hideAsync()} />;
   }

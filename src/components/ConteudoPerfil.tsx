@@ -10,7 +10,7 @@ import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
 import { PostCard } from '@/components/PostCard';
-import { cores, espaco, fonte, raio } from '@/constants/tema';
+import { cores, espaco, fonte, raio, sombra, familia } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
 import { mensagemDeErro } from '@/lib/erros';
@@ -90,20 +90,39 @@ export function ConteudoPerfil({ pessoaId, ehProprio }: Props) {
   const cabecalho = (
     <View style={estilos.cabecalho}>
       <CabecalhoTela secao={ehProprio ? 'Perfil' : 'Pessoa'} titulo={ehProprio ? 'Meu perfil' : 'Perfil'} />
+      {/* Cartão de capa: faixa azul + avatar grande sobreposto. */}
       <View style={estilos.cartao}>
-        <Avatar nome={perfil.nome} tamanho={64} />
+        <View style={estilos.capa} importantForAccessibility="no-hide-descendants">
+          <View style={estilos.capaBolha} />
+        </View>
+        <View style={estilos.avatarMoldura}>
+          <Avatar nome={perfil.nome} tamanho={80} />
+        </View>
         <View style={estilos.identidade}>
           <Text style={estilos.nome} accessibilityRole="header">
             {perfil.nome}
           </Text>
-          <Text style={estilos.resumo}>
-            {posts.length === 1 ? '1 publicação' : `${posts.length} publicações`}
-          </Text>
+          {perfil.bio ? (
+            <Text style={estilos.bio} numberOfLines={2}>
+              {perfil.bio}
+            </Text>
+          ) : null}
+          <View style={estilos.chip}>
+            <Text style={estilos.chipNumero}>{posts.length}</Text>
+            <Text style={estilos.chipTexto}>{posts.length === 1 ? 'publicação' : 'publicações'}</Text>
+          </View>
         </View>
+        {ehProprio ? (
+          <View style={estilos.acoes}>
+            <Botao
+              titulo="Editar perfil"
+              icone="create-outline"
+              variante="secundario"
+              aoPressionar={() => router.push('/editar-perfil')}
+            />
+          </View>
+        ) : null}
       </View>
-      {ehProprio ? (
-        <Botao titulo="Editar perfil" variante="secundario" aoPressionar={() => router.push('/editar-perfil')} />
-      ) : null}
       <AbasInternas
         abas={[
           { id: 'posts', rotulo: 'Posts' },
@@ -137,7 +156,7 @@ export function ConteudoPerfil({ pessoaId, ehProprio }: Props) {
       ItemSeparatorComponent={() => <View style={{ height: espaco.md }} />}
       ListHeaderComponent={cabecalho}
       ListEmptyComponent={
-        aba === 'sobre' ? sobre : <EstadoVazio titulo="Nenhuma publicação ainda" />
+        aba === 'sobre' ? sobre : <EstadoVazio icone="document-text-outline" titulo="Nenhuma publicação ainda" />
       }
       refreshControl={
         <RefreshControl
@@ -159,23 +178,51 @@ const estilos = StyleSheet.create({
   conteudo: { padding: espaco.lg, paddingBottom: espaco.xxl },
   cabecalho: { gap: espaco.lg, marginBottom: espaco.lg },
   cartao: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: espaco.lg,
     backgroundColor: cores.superficie,
     borderRadius: raio.card,
-    borderWidth: 1,
-    borderColor: cores.borda,
-    padding: espaco.lg,
+    ...sombra.card,
+    overflow: 'hidden',
+    paddingBottom: espaco.lg,
   },
-  identidade: { flex: 1, gap: espaco.xs },
-  nome: { ...fonte.subtitulo, fontSize: 22, color: cores.primaria },
-  resumo: { ...fonte.pequena, color: cores.textoSuave },
+  capa: { height: 76, backgroundColor: cores.primaria, overflow: 'hidden' },
+  capaBolha: {
+    position: 'absolute',
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    right: -40,
+    top: -70,
+    backgroundColor: cores.destaque,
+    opacity: 0.9,
+  },
+  avatarMoldura: {
+    alignSelf: 'flex-start',
+    marginLeft: espaco.lg,
+    marginTop: -40,
+    padding: 4,
+    borderRadius: 999,
+    backgroundColor: cores.superficie,
+  },
+  identidade: { paddingHorizontal: espaco.lg, paddingTop: espaco.sm, gap: espaco.sm },
+  nome: { ...fonte.titulo, fontSize: 24, lineHeight: 30, color: cores.texto },
+  bio: { ...fonte.corpo, color: cores.textoSuave },
+  chip: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 6,
+    paddingHorizontal: espaco.md,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: cores.primariaClara,
+  },
+  chipNumero: { fontFamily: familia.titulo, fontSize: 16, color: cores.primaria },
+  chipTexto: { ...fonte.pequena, color: cores.primaria },
+  acoes: { paddingHorizontal: espaco.lg, paddingTop: espaco.md },
   caixaSobre: {
     backgroundColor: cores.superficie,
     borderRadius: raio.card,
-    borderWidth: 1,
-    borderColor: cores.borda,
+    ...sombra.card,
     padding: espaco.lg,
     gap: espaco.xs,
   },

@@ -4,6 +4,7 @@ import { cores, espaco } from '@/constants/tema';
 
 // Tela de marca em React, exibida enquanto lemos a sessão salva.
 // Mesmo fundo e mesma imagem da splash nativa (app.json), para a troca ser suave.
+// Usa fonte do sistema de propósito: ela aparece antes das fontes do app carregarem.
 export function TelaMarca({ aoMontar }: { aoMontar?: () => void }) {
   return (
     <View

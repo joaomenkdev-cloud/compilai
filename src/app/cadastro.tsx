@@ -5,8 +5,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Botao } from '@/components/Botao';
 import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { CampoTexto } from '@/components/CampoTexto';
-import { Tela } from '@/components/Tela';
-import { areaToque, cores, espaco, fonte, raio } from '@/constants/tema';
+import { EstadoErro } from '@/components/EstadoErro';
+import { TelaEntrada } from '@/components/TelaEntrada';
+import { areaToque, cores, espaco, familia, fonte, raio } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { validarConfirmacao, validarEmail, validarNome, validarSenha } from '@/lib/validacao';
 
@@ -48,20 +49,20 @@ export default function Cadastro() {
   // Projeto com "Confirm email" ligado: não há sessão até a pessoa clicar no link.
   if (aguardandoConfirmacao) {
     return (
-      <Tela>
+      <TelaEntrada frase="Quase lá! Falta só confirmar o seu e-mail.">
         <CabecalhoTela secao="Criar conta" titulo="Confirme seu e-mail" />
         <View style={estilos.aviso} accessibilityRole="alert">
           <Text style={estilos.textoAviso}>
             {`Enviamos uma mensagem para ${email.trim()}. Abra o link que ela contém para ativar sua conta e depois volte aqui para entrar.`}
           </Text>
         </View>
-        <Botao titulo="Ir para Entrar" aoPressionar={() => router.replace('/login')} />
-      </Tela>
+        <Botao titulo="Ir para Entrar" icone="log-in-outline" aoPressionar={() => router.replace('/login')} />
+      </TelaEntrada>
     );
   }
 
   return (
-    <Tela>
+    <TelaEntrada frase="Crie sua conta e mostre para a turma o que você está construindo.">
       <CabecalhoTela secao="Criar conta" titulo="Entre para a comunidade" />
       <CampoTexto
         rotulo="Nome de exibição"
@@ -103,40 +104,35 @@ export default function Cadastro() {
         autoComplete="new-password"
         placeholder="Repita a senha"
       />
-      {erroGeral ? (
-        <View style={estilos.caixaErro} accessibilityRole="alert" accessibilityLiveRegion="polite">
-          <Text style={estilos.textoErro}>{erroGeral}</Text>
-        </View>
-      ) : null}
-      <Botao titulo="Criar conta" aoPressionar={aoCriarConta} carregando={enviando} />
+      {erroGeral ? <EstadoErro mensagem={erroGeral} /> : null}
+      <Botao titulo="Criar conta" icone="person-add-outline" aoPressionar={aoCriarConta} carregando={enviando} />
       <View style={estilos.rodape}>
         <Text style={estilos.textoRodape}>Já tem conta?</Text>
         <Link href="/login" accessibilityRole="link" accessibilityLabel="Entrar" style={estilos.link}>
           Entrar
         </Link>
       </View>
-    </Tela>
+    </TelaEntrada>
   );
 }
 
 const estilos = StyleSheet.create({
-  caixaErro: {
-    borderWidth: 1.5,
-    borderColor: cores.erro,
-    borderRadius: raio.campo,
-    padding: espaco.md,
-    backgroundColor: '#FDECEA',
-  },
-  textoErro: { ...fonte.corpo, color: cores.erro },
   aviso: {
-    borderWidth: 1.5,
-    borderColor: cores.primaria,
-    borderRadius: raio.card,
+    borderLeftWidth: 4,
+    borderLeftColor: cores.primaria,
+    borderRadius: raio.campo,
     padding: espaco.lg,
-    backgroundColor: cores.superficie,
+    backgroundColor: cores.primariaClara,
   },
   textoAviso: { ...fonte.corpo, color: cores.texto },
   rodape: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: espaco.sm, flexWrap: 'wrap' },
   textoRodape: { ...fonte.corpo, color: cores.textoSuave },
-  link: { ...fonte.corpo, fontWeight: '700', color: cores.primaria, paddingVertical: espaco.md, minHeight: areaToque },
+  link: {
+    ...fonte.corpo,
+    fontFamily: familia.negrito,
+    color: cores.primaria,
+    paddingVertical: espaco.md,
+    minHeight: areaToque,
+    textDecorationLine: 'underline',
+  },
 });

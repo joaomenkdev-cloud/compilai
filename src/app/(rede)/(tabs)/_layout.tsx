@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import type { ColorValue } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { cores } from '@/constants/tema';
+import { cores, familia } from '@/constants/tema';
 
 type Nome = keyof typeof Ionicons.glyphMap;
 
@@ -12,14 +13,22 @@ function IconeAba({ ativo, inativo, focused, color }: { ativo: Nome; inativo: No
 }
 
 export default function LayoutTabs() {
+  const insets = useSafeAreaInsets();
   return (
     <Tabs
       screenOptions={{
         headerShown: false, // quem mostra o cabeçalho (com o ícone de menu) é o Drawer
         tabBarActiveTintColor: cores.primaria,
         tabBarInactiveTintColor: cores.textoSuave,
-        tabBarLabelStyle: { fontSize: 12, fontWeight: '600' },
-        tabBarStyle: { backgroundColor: cores.superficie, borderTopColor: cores.borda, height: 64, paddingTop: 6 },
+        tabBarLabelStyle: { fontSize: 12, fontFamily: familia.medio },
+        // Altura = conteúdo + área segura (barra de gestos do celular), para nada ficar cortado.
+        tabBarStyle: {
+          backgroundColor: cores.superficie,
+          borderTopColor: cores.borda,
+          height: 62 + insets.bottom,
+          paddingTop: 6,
+          paddingBottom: insets.bottom + 8,
+        },
       }}
     >
       <Tabs.Screen name="index" options={{ title: 'Início', tabBarIcon: ({ focused, color }) => <IconeAba ativo="home" inativo="home-outline" focused={focused} color={color} /> }} />

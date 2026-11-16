@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BotaoMenu } from '@/components/BotaoMenu';
 import { BotaoVoltar } from '@/components/BotaoVoltar';
 import { ConteudoDrawer } from '@/components/ConteudoDrawer';
-import { cores } from '@/constants/tema';
+import { cores, familia } from '@/constants/tema';
 import { AvisosProvider } from '@/contexts/AvisosProvider';
 
 // Área protegida: um Drawer (menu lateral) que contém as Tabs como primeiro destino.
@@ -23,8 +23,11 @@ export default function LayoutRede() {
             headerStyle: { backgroundColor: cores.fundo },
             headerShadowVisible: false,
             headerTintColor: cores.primaria,
+            headerTitleStyle: { fontFamily: familia.tituloMedio },
             headerLeft: () => <BotaoMenu aoPressionar={() => navigation.toggleDrawer()} />,
             drawerStyle: { backgroundColor: cores.fundo, width: 290 },
+            // Fundo escurecido atrás do menu aberto, para o menu se destacar.
+            overlayColor: 'rgba(10, 53, 64, 0.5)',
           })}
         >
           <Drawer.Screen name="(tabs)" />

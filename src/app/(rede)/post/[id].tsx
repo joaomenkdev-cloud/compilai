@@ -10,7 +10,7 @@ import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
 import { PostCard } from '@/components/PostCard';
-import { cores, espaco, fonte, raio } from '@/constants/tema';
+import { cores, espaco, fonte, raio, sombra } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
 import { tempoRelativo } from '@/lib/datas';
@@ -150,7 +150,7 @@ function DetalhePost({ postId }: { postId: string }) {
             </View>
           </View>
         )}
-        ListEmptyComponent={<EstadoVazio titulo="Nenhum comentário ainda" mensagem="Puxe a conversa!" />}
+        ListEmptyComponent={<EstadoVazio icone="chatbubble-ellipses-outline" titulo="Nenhum comentário ainda" mensagem="Puxe a conversa!" />}
         ListFooterComponent={
           <View style={estilos.formulario}>
             <CampoTexto
@@ -198,8 +198,7 @@ const estilos = StyleSheet.create({
     gap: espaco.md,
     backgroundColor: cores.superficie,
     borderRadius: raio.card,
-    borderWidth: 1,
-    borderColor: cores.borda,
+    ...sombra.card,
     padding: espaco.md,
   },
   corpoComentario: { flex: 1, gap: espaco.xs },

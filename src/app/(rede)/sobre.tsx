@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { Tela } from '@/components/Tela';
-import { cores, espaco, fonte, raio } from '@/constants/tema';
+import { cores, espaco, fonte, raio, familia, sombra } from '@/constants/tema';
 
 const COMBINADOS = [
   {
@@ -117,12 +117,11 @@ const estilos = StyleSheet.create({
     padding: espaco.lg,
   },
   marca: { width: 64, height: 64 },
-  nome: { fontSize: 24, fontWeight: '800', color: cores.sobrePrimaria },
+  nome: { fontSize: 24, fontFamily: familia.negrito, color: cores.sobrePrimaria },
   secao: {
     backgroundColor: cores.superficie,
     borderRadius: raio.card,
-    borderWidth: 1,
-    borderColor: cores.borda,
+    ...sombra.card,
     padding: espaco.lg,
     gap: espaco.md,
   },
@@ -137,7 +136,7 @@ const estilos = StyleSheet.create({
     color: cores.sobrePrimaria,
     textAlign: 'center',
     lineHeight: 28,
-    fontWeight: '800',
+    fontFamily: familia.negrito,
     overflow: 'hidden',
   },
   tituloCombinado: { ...fonte.rotulo, fontSize: 15, color: cores.texto },

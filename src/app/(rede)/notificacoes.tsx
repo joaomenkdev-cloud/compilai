@@ -7,7 +7,7 @@ import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
-import { areaToque, cores, espaco, fonte, raio } from '@/constants/tema';
+import { areaToque, cores, espaco, fonte, raio, familia, sombra } from '@/constants/tema';
 import { useAvisos } from '@/contexts/AvisosProvider';
 import { tempoRelativo } from '@/lib/datas';
 import { mensagemDeErro } from '@/lib/erros';
@@ -98,6 +98,7 @@ export default function Notificacoes() {
       ListEmptyComponent={
         erro ? undefined : (
           <EstadoVazio
+            icone="notifications-outline"
             titulo="Nenhum aviso ainda"
             mensagem="Quando alguém curtir ou comentar suas publicações, o aviso aparece aqui."
           />
@@ -128,11 +129,13 @@ export default function Notificacoes() {
           >
             {/* Não lida = marcador + rótulo em texto, não só cor. */}
             <View style={[estilos.marcador, naoLida ? estilos.marcadorNovo : estilos.marcadorLido]} />
-            <Ionicons
-              name={item.tipo === 'curtida' ? 'heart' : 'chatbubble'}
-              size={22}
-              color={item.tipo === 'curtida' ? cores.destaqueTexto : cores.primaria}
-            />
+            <View style={[estilos.circuloIcone, item.tipo === 'curtida' ? estilos.circuloCurtida : estilos.circuloComentario]}>
+              <Ionicons
+                name={item.tipo === 'curtida' ? 'heart' : 'chatbubble'}
+                size={20}
+                color={item.tipo === 'curtida' ? cores.destaque : cores.primaria}
+              />
+            </View>
             <View style={estilos.corpo}>
               {naoLida ? <Text style={estilos.etiqueta}>Não lida</Text> : null}
               <Text style={[estilos.frase, naoLida && estilos.fraseNova]}>{frase(item)}</Text>
@@ -175,10 +178,12 @@ const estilos = StyleSheet.create({
     padding: espaco.md,
     backgroundColor: cores.superficie,
     borderRadius: raio.card,
-    borderWidth: 1,
-    borderColor: cores.borda,
+    ...sombra.card,
   },
-  avisoNovo: { borderColor: cores.destaque, borderWidth: 1.5 },
+  avisoNovo: { borderColor: cores.destaque, borderWidth: 1.5, backgroundColor: '#FFF9F4' },
+  circuloIcone: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  circuloCurtida: { backgroundColor: cores.destaqueClaro },
+  circuloComentario: { backgroundColor: cores.primariaClara },
   pressionado: { opacity: 0.8 },
   marcador: { width: 10, height: 10, borderRadius: 5 },
   marcadorNovo: { backgroundColor: cores.destaque },
@@ -196,7 +201,7 @@ const estilos = StyleSheet.create({
     overflow: 'hidden',
   },
   frase: { ...fonte.corpo, color: cores.texto },
-  fraseNova: { fontWeight: '700' },
+  fraseNova: { fontFamily: familia.negrito },
   trecho: { ...fonte.pequena, color: cores.textoSuave },
   data: { ...fonte.pequena, color: cores.textoSuave },
 });

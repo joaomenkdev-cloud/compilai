@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { areaToque, cores, espaco, raio } from '@/constants/tema';
+import { areaToque, cores, espaco, familia, raio, sombra } from '@/constants/tema';
 
 type Aba<T extends string> = { id: T; rotulo: string };
 
@@ -11,7 +11,8 @@ type Props<T extends string> = {
 };
 
 // Abas internas em pílula: dois botões + estado local (guardado pela tela).
-// Cada botão anuncia ao leitor de tela se está selecionado.
+// A selecionada vira uma "pílula" branca elevada; cada botão anuncia ao leitor
+// de tela se está selecionado.
 export function AbasInternas<T extends string>({ abas, selecionada, aoMudar }: Props<T>) {
   return (
     <View style={estilos.trilho} accessibilityRole="tablist">
@@ -24,9 +25,11 @@ export function AbasInternas<T extends string>({ abas, selecionada, aoMudar }: P
             accessibilityRole="tab"
             accessibilityLabel={aba.rotulo}
             accessibilityState={{ selected: ativa }}
-            style={[estilos.aba, ativa && estilos.abaAtiva]}
+            style={[estilos.aba, ativa && [estilos.abaAtiva, sombra.card]]}
           >
             <Text style={[estilos.texto, ativa && estilos.textoAtivo]}>{aba.rotulo}</Text>
+            {/* Marcador sob o texto: o estado não depende só da cor. */}
+            {ativa ? <View style={estilos.marcador} /> : null}
           </Pressable>
         );
       })}
@@ -37,9 +40,9 @@ export function AbasInternas<T extends string>({ abas, selecionada, aoMudar }: P
 const estilos = StyleSheet.create({
   trilho: {
     flexDirection: 'row',
-    backgroundColor: cores.pilula,
+    backgroundColor: cores.superficieSuave,
     borderRadius: raio.pilula,
-    padding: 4,
+    padding: 5,
     gap: 4,
   },
   aba: {
@@ -50,7 +53,8 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: espaco.md,
   },
-  abaAtiva: { backgroundColor: cores.primaria },
-  texto: { fontSize: 15, fontWeight: '600', color: cores.primaria },
-  textoAtivo: { color: cores.sobrePrimaria },
+  abaAtiva: { backgroundColor: cores.superficie },
+  texto: { fontFamily: familia.medio, fontSize: 15, color: cores.textoSuave },
+  textoAtivo: { fontFamily: familia.negrito, color: cores.primaria },
+  marcador: { width: 18, height: 3, borderRadius: 2, backgroundColor: cores.destaque, marginTop: 3 },
 });

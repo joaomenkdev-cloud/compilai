@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { areaToque, cores, espaco } from '@/constants/tema';
+import { areaToque, cores, espaco, familia, pressionado } from '@/constants/tema';
 
 type Props = {
   curtido: boolean;
@@ -22,9 +22,18 @@ export function BotaoCurtir({ curtido, curtidas, ocupado, aoPressionar }: Props)
       accessibilityRole="button"
       accessibilityLabel={`${curtido ? 'Descurtir' : 'Curtir'}, ${total}`}
       accessibilityState={{ selected: curtido, disabled: ocupado, busy: ocupado }}
-      style={[estilos.botao, curtido && estilos.ativo, ocupado && estilos.ocupado]}
+      style={({ pressed }) => [
+        estilos.botao,
+        curtido && estilos.ativo,
+        ocupado && estilos.ocupado,
+        pressed && !ocupado && pressionado,
+      ]}
     >
-      <Ionicons name={curtido ? 'heart' : 'heart-outline'} size={20} color={curtido ? cores.destaqueTexto : cores.primaria} />
+      <Ionicons
+        name={curtido ? 'heart' : 'heart-outline'}
+        size={20}
+        color={curtido ? cores.destaque : cores.textoSuave}
+      />
       <Text style={[estilos.texto, curtido && estilos.textoAtivo]}>
         {curtido ? 'Curtido' : 'Curtir'} · {curtidas}
       </Text>
@@ -38,14 +47,13 @@ const estilos = StyleSheet.create({
     minWidth: areaToque,
     paddingHorizontal: espaco.md,
     borderRadius: 999,
-    borderWidth: 1.5,
-    borderColor: cores.borda,
+    backgroundColor: cores.superficieSuave,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: espaco.xs,
+    gap: 6,
   },
-  ativo: { borderColor: cores.destaque, backgroundColor: '#FDEEE4' },
+  ativo: { backgroundColor: cores.destaqueClaro },
   ocupado: { opacity: 0.5 },
-  texto: { fontSize: 14, fontWeight: '700', color: cores.primaria },
-  textoAtivo: { color: cores.destaqueTexto },
+  texto: { fontFamily: familia.medio, fontSize: 14, color: cores.texto },
+  textoAtivo: { fontFamily: familia.negrito, color: cores.destaqueTexto },
 });
