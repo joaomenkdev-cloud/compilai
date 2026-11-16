@@ -34,5 +34,8 @@ export async function cadastrar(
 }
 
 export async function sair(): Promise<void> {
-  await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
+  // Sem internet o servidor não responde e o SDK mantém a sessão. Nesse caso
+  // encerramos só neste aparelho (scope 'local'), para o Sair sempre funcionar.
+  if (error) await supabase.auth.signOut({ scope: 'local' });
 }

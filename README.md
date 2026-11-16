@@ -61,6 +61,8 @@ npx expo start
 
 - **Celular:** abra o Expo Go e leia o QR code.
 - **Emulador Android:** com o emulador aberto, aperte `a` no terminal.
+- **Navegador:** aperte `w` (útil para mostrar as telas; o `metro.config.js` habilita o SQLite na web).
+  Extensões como Dark Reader mudam as cores da página.
 
 Contas de demonstração e roteiro: [`supabase/seed.md`](supabase/seed.md) e [`docs/TESTES.md`](docs/TESTES.md).
 

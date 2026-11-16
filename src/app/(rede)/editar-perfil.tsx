@@ -1,5 +1,5 @@
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Botao } from '@/components/Botao';
@@ -22,16 +22,24 @@ export default function EditarPerfil() {
   const [sucesso, setSucesso] = useState(false);
   const [salvando, setSalvando] = useState(false);
 
+  // Guarda o perfil mais recente num ref: assim o efeito abaixo roda SÓ quando a tela
+  // ganha foco, e não de novo quando salvar atualiza o perfil (o que apagaria
+  // a mensagem "Perfil atualizado" logo depois de aparecer).
+  const perfilAtual = useRef(perfil);
+  useEffect(() => {
+    perfilAtual.current = perfil;
+  }, [perfil]);
+
   // Ao abrir a tela, parte sempre dos dados salvos e sem mensagens antigas.
   useFocusEffect(
     useCallback(() => {
-      setNome(perfil?.nome ?? '');
-      setBio(perfil?.bio ?? '');
+      setNome(perfilAtual.current?.nome ?? '');
+      setBio(perfilAtual.current?.bio ?? '');
       setErroNome(null);
       setErroBio(null);
       setErroGeral(null);
       setSucesso(false);
-    }, [perfil]),
+    }, []),
   );
 
   async function aoSalvar() {
