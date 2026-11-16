@@ -1,6 +1,7 @@
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { BotaoMenu } from '@/components/BotaoMenu';
 import { BotaoVoltar } from '@/components/BotaoVoltar';
 import { ConteudoDrawer } from '@/components/ConteudoDrawer';
 import { cores } from '@/constants/tema';
@@ -14,13 +15,17 @@ export default function LayoutRede() {
       <AvisosProvider>
         <Drawer
           drawerContent={(props) => <ConteudoDrawer {...props} />}
-          screenOptions={{
+          // "history": Voltar retorna à tela anterior de verdade
+          // (ex.: post → perfil da pessoa → Voltar → post), e não direto para as abas.
+          backBehavior="history"
+          screenOptions={({ navigation }) => ({
             title: '',
             headerStyle: { backgroundColor: cores.fundo },
             headerShadowVisible: false,
             headerTintColor: cores.primaria,
+            headerLeft: () => <BotaoMenu aoPressionar={() => navigation.toggleDrawer()} />,
             drawerStyle: { backgroundColor: cores.fundo, width: 290 },
-          }}
+          })}
         >
           <Drawer.Screen name="(tabs)" />
           <Drawer.Screen name="notificacoes" />

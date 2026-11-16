@@ -9,10 +9,9 @@
 - [x] Fase 7 — Detalhe, curtidas, comentários (comentários, avisos e regras testados no banco)
 - [x] Fase 8 — Notificações (Novas/Anteriores, marcar lida, contador no menu; Teste 3 conferido no banco)
 - [x] Fase 9 — SQLite (rascunho + cache offline) (código pronto; SQLite só roda no aparelho: teste offline é manual)
-- [ ] Fase 10 — Polimento
+- [x] Fase 10 — Polimento (ícone/splash com a marca, tela Sobre, botão de menu em português, Voltar por histórico, contraste ≥ 4,5:1 conferido)
 - [ ] Fase 11 — Documentação
 
 ## Notas
 - Template atual do Expo (SDK 58) usa `src/app`; as pastas de apoio ficam em `src/` (alias `@/`).
 - O Expo Router 58 traz o Drawer embutido (`expo-router/drawer`); não precisa de `@react-navigation/drawer`.
-- Splash nativa usa a imagem padrão do template como placeholder (trocar por logo do CompilaAí na Fase 10).

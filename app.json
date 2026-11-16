@@ -10,7 +10,7 @@
     "backgroundColor": "#FAF6EE",
     "ios": {
       "bundleIdentifier": "br.etec.compilai",
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/images/icon.png"
     },
     "android": {
       "package": "br.etec.compilai",
