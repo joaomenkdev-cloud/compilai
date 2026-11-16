@@ -8,7 +8,7 @@
 - [x] Fase 6 — Explorar, Perfil, Pessoa, Editar perfil (busca, edição e bloqueio de edição alheia testados no banco)
 - [x] Fase 7 — Detalhe, curtidas, comentários (comentários, avisos e regras testados no banco)
 - [x] Fase 8 — Notificações (Novas/Anteriores, marcar lida, contador no menu; Teste 3 conferido no banco)
-- [ ] Fase 9 — SQLite (rascunho + cache offline)
+- [x] Fase 9 — SQLite (rascunho + cache offline) (código pronto; SQLite só roda no aparelho: teste offline é manual)
 - [ ] Fase 10 — Polimento
 - [ ] Fase 11 — Documentação
 

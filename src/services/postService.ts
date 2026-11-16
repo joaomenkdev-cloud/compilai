@@ -1,4 +1,6 @@
+import { ehErroDeRede } from '@/lib/erros';
 import { supabase } from '@/lib/supabase';
+import { lerFeed, salvarFeed } from '@/storage/feedCache';
 
 /** Publicação já pronta para a tela (com nome do autor e contadores). */
 export type Post = {
@@ -103,4 +105,31 @@ async function idsCurtidosPor(usuarioId: string, postIds: string[]): Promise<Set
 export async function publicar(autorId: string, texto: string): Promise<void> {
   const { error } = await supabase.from('posts').insert({ autor_id: autorId, texto: texto.trim() });
   if (error) throw error;
+}
+
+export type ResultadoFeed = {
+  posts: Post[];
+  /** true quando a internet falhou e estes posts vieram do cache do aparelho. */
+  offline: boolean;
+  /** Quando o feed mostrado foi buscado na nuvem pela última vez (ISO). */
+  atualizado: string | null;
+};
+
+/**
+ * FEED COM PLANO B PARA FALTA DE REDE (decisão da equipe, ver README):
+ * 1. busca na nuvem (Supabase) e, deu certo, salva uma cópia no SQLite do aparelho;
+ * 2. se a busca falhar POR REDE, cai em lerFeed(dono) e devolve a última cópia salva;
+ * 3. se não houver cópia (primeiro uso sem internet) ou o erro não for de rede, repassa o erro.
+ */
+export async function buscarFeed(usuarioId: string): Promise<ResultadoFeed> {
+  try {
+    const posts = await buscarPosts(usuarioId);
+    await salvarFeed(usuarioId, posts).catch(() => {}); // falha no cache não derruba o feed
+    return { posts, offline: false, atualizado: new Date().toISOString() };
+  } catch (erro) {
+    if (!ehErroDeRede(erro)) throw erro;
+    const salvo = await lerFeed(usuarioId);
+    if (!salvo) throw erro;
+    return { posts: salvo.posts, offline: true, atualizado: salvo.atualizado };
+  }
 }

@@ -5,9 +5,13 @@ import { StatusBar } from 'expo-status-bar';
 import { TelaMarca } from '@/components/TelaMarca';
 import { cores } from '@/constants/tema';
 import { AuthProvider, useAuth } from '@/contexts/AuthProvider';
+import { abrirBanco } from '@/lib/db';
 
 // Mantém a splash nativa na tela até a primeira tela em React estar pronta.
 SplashScreen.preventAutoHideAsync();
+
+// Abre o SQLite do aparelho uma vez, logo ao iniciar (rascunho + cache do feed).
+abrirBanco().catch(() => {});
 
 // Decide quais rotas existem conforme a sessão:
 //  - com sessão: só a área (rede); tentar abrir /login redireciona para o Início;

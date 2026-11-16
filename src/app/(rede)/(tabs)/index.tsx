@@ -3,6 +3,7 @@ import { useCallback, useRef, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { AbasInternas } from '@/components/AbasInternas';
+import { BannerOffline } from '@/components/BannerOffline';
 import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
@@ -11,10 +12,13 @@ import { PostCard } from '@/components/PostCard';
 import { cores, espaco } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
-import { mensagemDeErro } from '@/lib/erros';
-import { buscarPosts, type Post } from '@/services/postService';
+import { ehErroDeRede, mensagemDeErro } from '@/lib/erros';
+import { buscarFeed, buscarPosts, type Post } from '@/services/postService';
+import { lerFeed } from '@/storage/feedCache';
 
 type AbaInicio = 'recentes' | 'minhas';
+
+const PRIMEIRO_CARREGAMENTO = 'O primeiro carregamento precisa de internet. Conecte-se e puxe a tela para atualizar.';
 
 export default function Inicio() {
   const { usuario } = useAuth();
@@ -25,24 +29,59 @@ export default function Inicio() {
   const [carregando, setCarregando] = useState(true);
   const [atualizando, setAtualizando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  // Cada busca ganha um número; só a mais recente pode mexer na tela
-  // (evita que uma resposta atrasada da outra aba sobrescreva a lista).
+  /** Preenchido quando a lista veio do cache por falta de rede: data da última atualização. */
+  const [offline, setOffline] = useState<{ atualizado: string | null } | null>(null);
+
+  // Cada busca ganha um número; só a mais recente pode mexer na tela.
   const ultimaBusca = useRef(0);
+  // O cache é mostrado só na primeira carga de cada aba (depois a lista já está na tela).
+  const cacheJaMostrado = useRef(false);
 
   const carregar = useCallback(async () => {
     if (!usuarioId) return;
     const numero = ++ultimaBusca.current;
+    const atual = () => numero === ultimaBusca.current;
+
+    // 1) Mostra a última cópia salva no aparelho ENQUANTO busca os dados novos.
+    if (!cacheJaMostrado.current) {
+      cacheJaMostrado.current = true;
+      const salvo = await lerFeed(usuarioId).catch(() => null);
+      if (salvo && atual()) {
+        setPosts(aba === 'minhas' ? salvo.posts.filter((p) => p.autor_id === usuarioId) : salvo.posts);
+        setCarregando(false);
+      }
+    }
+
+    // 2) Busca na nuvem.
     try {
-      // Recentes: feed de todos. Minhas: o mesmo feed filtrado por autor_id.
-      const dados = await buscarPosts(usuarioId, aba === 'minhas' ? { autorId: usuarioId } : {});
-      if (numero !== ultimaBusca.current) return;
-      setPosts(dados);
+      if (aba === 'recentes') {
+        // buscarFeed já salva no cache e, sem rede, devolve a cópia do aparelho.
+        const r = await buscarFeed(usuarioId);
+        if (!atual()) return;
+        setPosts(r.posts);
+        setOffline(r.offline ? { atualizado: r.atualizado } : null);
+      } else {
+        try {
+          const meus = await buscarPosts(usuarioId, { autorId: usuarioId });
+          if (!atual()) return;
+          setPosts(meus);
+          setOffline(null);
+        } catch (e) {
+          // Sem rede na aba Minhas: usa os meus posts que estão no feed salvo.
+          if (!ehErroDeRede(e)) throw e;
+          const salvo = await lerFeed(usuarioId);
+          if (!salvo) throw e;
+          if (!atual()) return;
+          setPosts(salvo.posts.filter((p) => p.autor_id === usuarioId));
+          setOffline({ atualizado: salvo.atualizado });
+        }
+      }
       setErro(null);
     } catch (e) {
-      if (numero !== ultimaBusca.current) return;
-      setErro(mensagemDeErro(e));
+      if (!atual()) return;
+      setErro(ehErroDeRede(e) ? PRIMEIRO_CARREGAMENTO : mensagemDeErro(e));
     } finally {
-      if (numero === ultimaBusca.current) {
+      if (atual()) {
         setCarregando(false);
         setAtualizando(false);
       }
@@ -58,8 +97,10 @@ export default function Inicio() {
 
   function mudarAba(nova: AbaInicio) {
     if (nova === aba) return;
+    cacheJaMostrado.current = false;
     setPosts([]);
     setErro(null);
+    setOffline(null);
     setCarregando(true);
     setAba(nova);
   }
@@ -104,6 +145,7 @@ export default function Inicio() {
             selecionada={aba}
             aoMudar={mudarAba}
           />
+          {offline ? <BannerOffline atualizado={offline.atualizado} /> : null}
           {/* Erro ao atualizar, mas ainda com a lista anterior na tela */}
           {erro && posts.length > 0 ? <EstadoErro mensagem={erro} aoTentarDeNovo={carregar} /> : null}
         </View>
