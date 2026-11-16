@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAuth } from '@/contexts/AuthProvider';
+
 import { areaToque, cores, espaco, fonte, raio } from '@/constants/tema';
 
 type Item = {
@@ -16,6 +18,7 @@ type Item = {
 // (As rotas de detalhe existem no Drawer, mas não aparecem aqui.)
 export function ConteudoDrawer({ navigation }: DrawerContentComponentProps) {
   const router = useRouter();
+  const { sair } = useAuth();
   const insets = useSafeAreaInsets();
 
   const ir = (rota: '/' | '/notificacoes' | '/sobre') => {
@@ -30,9 +33,12 @@ export function ConteudoDrawer({ navigation }: DrawerContentComponentProps) {
     {
       rotulo: 'Sair',
       icone: 'log-out-outline',
-      // Fase 3: aqui entra auth.signOut() + router.replace('/login').
-      aoPressionar: () => {
+      // Encerra a sessão e troca (replace) a tela por /login: o histórico das telas
+      // privadas some, então o botão Voltar não as reabre. Ao desmontar a área (rede),
+      // todo o estado em memória das telas é descartado.
+      aoPressionar: async () => {
         navigation.closeDrawer();
+        await sair();
         router.replace('/login');
       },
     },
