@@ -1,16 +1,11 @@
 import { useLocalSearchParams } from 'expo-router';
 
-import { CabecalhoTela } from '@/components/CabecalhoTela';
-import { EstadoVazio } from '@/components/EstadoVazio';
-import { Tela } from '@/components/Tela';
+import { ConteudoPerfil } from '@/components/ConteudoPerfil';
 
-// PLACEHOLDER (Fase 2): perfil público real entra na Fase 6.
+// Perfil público de outra pessoa, aberto pelo ID que vem na rota.
+// Mostra só os dados públicos: sem controle de edição.
 export default function PerfilPessoa() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  return (
-    <Tela>
-      <CabecalhoTela secao="Pessoa" titulo="Perfil" />
-      <EstadoVazio titulo={`Pessoa ${id}`} mensagem="Em construção." />
-    </Tela>
-  );
+  // key={id}: ao abrir outra pessoa, a tela recomeça do zero (sem mostrar dados da anterior).
+  return <ConteudoPerfil key={id} pessoaId={id} ehProprio={false} />;
 }

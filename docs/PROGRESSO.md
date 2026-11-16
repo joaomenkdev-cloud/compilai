@@ -5,7 +5,7 @@
 - [x] Fase 3 — Supabase + Auth (código pronto; login real ainda a testar no app)
 - [x] Fase 4 — Schema SQL (aplicado no projeto `sooqpffnxpgsmhjvdcyw`, org compilai: 5 tabelas com RLS, 12 políticas, 2 gatilhos; Confirm email desligado)
 - [x] Fase 5 — Publicar + Feed (Recentes/Minhas, PostCard, curtir; consultas testadas no banco real com 2 contas)
-- [ ] Fase 6 — Explorar, Perfil, Pessoa, Editar perfil
+- [x] Fase 6 — Explorar, Perfil, Pessoa, Editar perfil (busca, edição e bloqueio de edição alheia testados no banco)
 - [ ] Fase 7 — Detalhe, curtidas, comentários
 - [ ] Fase 8 — Notificações
 - [ ] Fase 9 — SQLite (rascunho + cache offline)
