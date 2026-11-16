@@ -20,14 +20,14 @@ export default function LayoutTabs() {
         headerShown: false, // quem mostra o cabeçalho (com o ícone de menu) é o Drawer
         tabBarActiveTintColor: cores.primaria,
         tabBarInactiveTintColor: cores.textoSuave,
-        tabBarLabelStyle: { fontSize: 12, fontFamily: familia.medio },
+        tabBarLabelStyle: { fontSize: 12, lineHeight: 16, fontFamily: familia.medio },
         // Altura = conteúdo + área segura (barra de gestos do celular), para nada ficar cortado.
         tabBarStyle: {
           backgroundColor: cores.superficie,
           borderTopColor: cores.borda,
-          height: 62 + insets.bottom,
+          height: 68 + insets.bottom,
           paddingTop: 6,
-          paddingBottom: insets.bottom + 8,
+          paddingBottom: insets.bottom + 6,
         },
       }}
     >

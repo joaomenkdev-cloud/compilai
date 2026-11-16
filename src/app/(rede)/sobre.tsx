@@ -42,7 +42,7 @@ export default function Sobre() {
         />
         <View style={{ flex: 1, gap: espaco.xs }}>
           <Text style={estilos.nome}>CompilaAí</Text>
-          <Text style={estilos.texto}>Projetos, dúvidas e conquistas de quem está aprendendo a programar.</Text>
+          <Text style={estilos.textoMarca}>Projetos, dúvidas e conquistas de quem está aprendendo a programar.</Text>
         </View>
       </View>
 
@@ -127,6 +127,8 @@ const estilos = StyleSheet.create({
   },
   tituloSecao: { ...fonte.subtitulo, color: cores.primaria },
   texto: { ...fonte.corpo, color: cores.texto },
+  // Texto claro sobre o cartão azul (contraste ≥ 4,5:1).
+  textoMarca: { ...fonte.corpo, color: '#D5E6EA' },
   combinado: { flexDirection: 'row', gap: espaco.md },
   numero: {
     width: 28,
