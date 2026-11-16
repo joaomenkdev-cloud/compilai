@@ -34,7 +34,10 @@ Edite o perfil da Bia → biografia: "2º ano de DS. Curto React Native."
 
 Entre como **Caio** e:
 
+- edite o perfil → biografia: "3º ano de DS. Estudando Supabase e banco de dados.";
+- publique: "Hoje entendi de vez como funciona RLS no Supabase: cada linha só aparece pra quem tem permissão. Mudou minha cabeça!";
 - procure "Bia" em Explorar → Pessoas e abra o perfil;
-- curta o primeiro post e comente: "Ficou muito bom! Como você fez o cache?"
+- curta o post do login e comente: "Ficou muito bom! Como você fez o cache?";
+- no post do FlatList, comente: "Tenta usar keyExtractor e tirar funções criadas dentro do renderItem."
 
 Volte para a **Bia**: o menu lateral mostra os avisos não lidos em Notificações.
