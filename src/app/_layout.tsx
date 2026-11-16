@@ -1,18 +1,19 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import { cores } from '@/constants/tema';
 
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+// Stack raiz: telas públicas (login, cadastro) + o grupo protegido (rede).
+// Na Fase 3 entram aqui o AuthProvider e a splash enquanto a sessão carrega.
+export default function LayoutRaiz() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <>
+      <StatusBar style="dark" />
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: cores.fundo } }}>
+        <Stack.Screen name="login" />
+        <Stack.Screen name="cadastro" />
+        <Stack.Screen name="(rede)" />
+      </Stack>
+    </>
   );
 }
