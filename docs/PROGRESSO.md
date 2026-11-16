@@ -10,8 +10,11 @@
 - [x] Fase 8 — Notificações (Novas/Anteriores, marcar lida, contador no menu; Teste 3 conferido no banco)
 - [x] Fase 9 — SQLite (rascunho + cache offline) (código pronto; SQLite só roda no aparelho: teste offline é manual)
 - [x] Fase 10 — Polimento (ícone/splash com a marca, tela Sobre, botão de menu em português, Voltar por histórico, contraste ≥ 4,5:1 conferido)
-- [ ] Fase 11 — Documentação
+- [x] Fase 11 — Documentação (README, seed.md, TESTES.md, eas.json, Teste 4 rodado: PASSOU)
 
 ## Notas
 - Template atual do Expo (SDK 58) usa `src/app`; as pastas de apoio ficam em `src/` (alias `@/`).
 - O Expo Router 58 traz o Drawer embutido (`expo-router/drawer`); não precisa de `@react-navigation/drawer`.
+
+## Pendente de teste manual (precisa de celular/emulador)
+- Fluxo das telas no aparelho, splash nativa (build preview) e Teste 5 sem internet.

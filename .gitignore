@@ -44,3 +44,4 @@ example
 
 # variáveis de ambiente (nunca commitar)
 .env
+.env.teste
