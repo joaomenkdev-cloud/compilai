@@ -181,6 +181,16 @@ Toda chamada ao Supabase passa por `services/`; todo acesso ao SQLite passa por 
 ## Verificação
 
 ```bash
-npx tsc --noEmit
-npx expo lint
+npx tsc --noEmit      # tipos
+npx expo lint         # padrão de código
+npm test              # testes automáticos das regras (validação, datas, erros)
+npm run teste:autorizacao   # Teste 4, contra o Supabase
 ```
+
+### Detalhes que deixam o app mais redondo
+
+- **Sino de avisos** no cabeçalho, com o total de não lidas (atualiza ao voltar para o app e a cada minuto).
+- **Busca automática** no Explorar: pesquisa 400 ms depois que a pessoa para de digitar.
+- **Aviso de sem internet** em Publicar (via NetInfo), sugerindo salvar como rascunho.
+- **Carregamento em esqueleto** (respeita "reduzir movimento") e estados vazios com ícone.
+- **Tela de erro** amigável se algo quebrar e **página não encontrada** em português.

@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { AppState } from 'react-native';
 
 import { contarNaoLidos } from '@/services/notificationService';
 
@@ -23,11 +24,22 @@ export function AvisosProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Primeira contagem ao entrar na área logada.
+  // Conta ao entrar na área logada, quando o app volta para a frente e a cada
+  // 60 s enquanto está aberto (assim o sino do cabeçalho não fica desatualizado).
   useEffect(() => {
-    contarNaoLidos()
-      .then(setNaoLidos)
-      .catch(() => {});
+    const contar = () =>
+      contarNaoLidos()
+        .then(setNaoLidos)
+        .catch(() => {}); // sem rede: mantém o último número
+    contar();
+    const intervalo = setInterval(contar, 60_000);
+    const assinatura = AppState.addEventListener('change', (estado) => {
+      if (estado === 'active') contar();
+    });
+    return () => {
+      clearInterval(intervalo);
+      assinatura.remove();
+    };
   }, []);
 
   const valor = useMemo(() => ({ naoLidos, recarregar }), [naoLidos, recarregar]);

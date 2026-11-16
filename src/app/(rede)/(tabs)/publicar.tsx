@@ -1,3 +1,5 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useNetInfo } from '@react-native-community/netinfo';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -22,6 +24,9 @@ export default function Publicar() {
   const router = useRouter();
   const { usuario } = useAuth();
   const dono = usuario?.id;
+  // Estado da conexão do aparelho: false = sem internet (null = ainda não sabe).
+  const { isConnected } = useNetInfo();
+  const semInternet = isConnected === false;
 
   const [aba, setAba] = useState<AbaPublicar>('escrever');
   const [texto, setTexto] = useState('');
@@ -114,6 +119,14 @@ export default function Publicar() {
 
       {aba === 'escrever' ? (
         <>
+          {semInternet ? (
+            <View style={estilos.offline} accessibilityRole="alert" accessibilityLiveRegion="polite">
+              <Ionicons name="cloud-offline-outline" size={20} color={cores.texto} />
+              <Text style={estilos.textoOffline}>
+                Você está sem internet. Salve como rascunho e publique quando a conexão voltar.
+              </Text>
+            </View>
+          ) : null}
           <CampoTexto
             rotulo="O que você está construindo ou aprendendo?"
             value={texto}
@@ -168,6 +181,17 @@ const estilos = StyleSheet.create({
   campoGrande: { minHeight: 160, paddingTop: espaco.md },
   contador: { ...fonte.pequena, color: cores.textoSuave, textAlign: 'right', marginTop: -espaco.sm },
   contadorErro: { color: cores.erro, fontFamily: familia.negrito },
+  offline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: espaco.sm,
+    padding: espaco.md,
+    borderRadius: raio.campo,
+    backgroundColor: cores.superficieSuave,
+    borderLeftWidth: 4,
+    borderLeftColor: cores.texto,
+  },
+  textoOffline: { ...fonte.pequena, fontSize: 14, color: cores.texto, flex: 1 },
   dica: { ...fonte.pequena, color: cores.textoSuave, textAlign: 'center' },
   sucesso: {
     borderWidth: 1.5,

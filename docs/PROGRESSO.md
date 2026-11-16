@@ -18,3 +18,9 @@
 
 ## Pendente de teste manual (precisa de celular/emulador)
 - Fluxo das telas no aparelho, splash nativa (build preview) e Teste 5 sem internet.
+
+## Melhorias extras (após as 11 fases)
+- [x] Novo visual (fontes, sombras, topo de marca, perfil com capa, esqueleto de carregamento)
+- [x] Sino de avisos no cabeçalho, busca automática, aviso de sem internet em Publicar
+- [x] Tela de erro e página não encontrada
+- [x] Testes automáticos (`npm test`, 8 testes)

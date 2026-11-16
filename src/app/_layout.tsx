@@ -1,12 +1,15 @@
 import { DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
 import { SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, type ErrorBoundaryProps } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { View } from 'react-native';
 
+import { Botao } from '@/components/Botao';
+import { EstadoErro } from '@/components/EstadoErro';
 import { TelaMarca } from '@/components/TelaMarca';
-import { cores } from '@/constants/tema';
+import { cores, espaco } from '@/constants/tema';
 import { AuthProvider, useAuth } from '@/contexts/AuthProvider';
 import { abrirBanco } from '@/lib/db';
 
@@ -47,6 +50,17 @@ function Rotas() {
         <Stack.Screen name="cadastro" />
       </Stack.Protected>
     </Stack>
+  );
+}
+
+// Se alguma tela quebrar com um erro inesperado, o Expo Router mostra isto
+// (em vez de fechar o app), com a opção de tentar de novo.
+export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
+  return (
+    <View style={{ flex: 1, backgroundColor: cores.fundo, padding: espaco.xl, justifyContent: 'center', gap: espaco.lg }}>
+      <EstadoErro mensagem="Algo inesperado aconteceu nesta tela. Tente de novo; se continuar, feche e abra o app." />
+      <Botao titulo="Tentar de novo" icone="refresh" aoPressionar={retry} />
+    </View>
   );
 }
 

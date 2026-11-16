@@ -48,7 +48,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "teste:autorizacao": "node --env-file=.env --env-file=.env.teste scripts/teste-autorizacao.ts"
+    "teste:autorizacao": "node --env-file=.env --env-file=.env.teste scripts/teste-autorizacao.ts",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/*.test.ts"
   },
   "private": true
 }

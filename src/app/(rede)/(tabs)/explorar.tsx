@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AbasInternas } from '@/components/AbasInternas';
@@ -33,9 +33,32 @@ export default function Explorar() {
   const [buscando, setBuscando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const ultimaBusca = useRef(0);
+  // Busca automática: espera 400 ms sem digitar antes de consultar o banco
+  // (evita uma consulta por letra digitada).
+  const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (temporizador.current) clearTimeout(temporizador.current);
+  }, []);
 
-  async function buscar(abaAlvo: AbaExplorar = aba) {
-    const limpo = termo.trim();
+  function aoDigitar(texto: string) {
+    setTermo(texto);
+    if (temporizador.current) clearTimeout(temporizador.current);
+    if (!texto.trim()) {
+      // Campo vazio: volta ao estado inicial ("Digite um termo...").
+      ultimaBusca.current++;
+      setPessoas([]);
+      setPosts([]);
+      setTermoBuscado(null);
+      setBuscando(false);
+      setErro(null);
+      return;
+    }
+    temporizador.current = setTimeout(() => buscar(aba, texto), 400);
+  }
+
+  async function buscar(abaAlvo: AbaExplorar = aba, termoAlvo: string = termo) {
+    if (temporizador.current) clearTimeout(temporizador.current);
+    const limpo = termoAlvo.trim();
     if (!usuarioId || limpo.length === 0) return;
     const numero = ++ultimaBusca.current;
     setBuscando(true);
@@ -63,7 +86,7 @@ export default function Explorar() {
     setPosts([]);
     setTermoBuscado(null);
     // Se já havia um termo, repete a busca na nova aba.
-    if (termo.trim()) buscar(nova);
+    if (termo.trim()) buscar(nova, termo);
   }
 
   const atualizarPost = useCallback(
@@ -88,7 +111,7 @@ export default function Explorar() {
         <View style={estilos.linhaBusca}>
           <TextInput
             value={termo}
-            onChangeText={setTermo}
+            onChangeText={aoDigitar}
             onSubmitEditing={() => buscar()}
             returnKeyType="search"
             placeholder={aba === 'pessoas' ? 'Ex.: Bia' : 'Ex.: React Native'}
@@ -133,7 +156,7 @@ export default function Explorar() {
         style={estilos.fundo}
         contentContainerStyle={estilos.conteudo}
         keyboardShouldPersistTaps="handled"
-        data={buscando ? [] : pessoas}
+        data={pessoas}
         keyExtractor={(p) => p.id}
         ListHeaderComponent={cabecalho}
         ListEmptyComponent={vazio()}
@@ -167,7 +190,7 @@ export default function Explorar() {
       style={estilos.fundo}
       contentContainerStyle={estilos.conteudo}
       keyboardShouldPersistTaps="handled"
-      data={buscando ? [] : posts}
+      data={posts}
       keyExtractor={(p) => p.id}
       ListHeaderComponent={cabecalho}
       ListEmptyComponent={vazio()}
