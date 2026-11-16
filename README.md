@@ -15,6 +15,18 @@ Enunciado: [`docs/PAM_II_Atividade_Rede_Social.pdf`](docs/PAM_II_Atividade_Rede_
 | Aparelho | **SQLite** (`expo-sqlite`): rascunho e último feed · **AsyncStorage**: sessão (via SDK do Supabase) |
 | Visual | Componentes próprios com `StyleSheet` (sem UI kit) · fontes **Space Grotesk** (títulos) e **DM Sans** (texto) via `@expo-google-fonts` · ícones Ionicons |
 
+## Telas
+
+| Entrar | Criar conta | Início | Explorar | Publicar |
+|:---:|:---:|:---:|:---:|:---:|
+| <img src="docs/prints/01-entrar.jpg" width="160" alt="Tela Entrar"> | <img src="docs/prints/02-criar-conta.jpg" width="160" alt="Tela Criar conta"> | <img src="docs/prints/03-inicio.jpg" width="160" alt="Tela Início com o feed"> | <img src="docs/prints/04-explorar.jpg" width="160" alt="Tela Explorar com busca de pessoas"> | <img src="docs/prints/05-publicar.jpg" width="160" alt="Tela Publicar"> |
+
+| Perfil | Publicação | Notificações | Menu lateral | Sobre |
+|:---:|:---:|:---:|:---:|:---:|
+| <img src="docs/prints/06-perfil.jpg" width="160" alt="Tela Perfil"> | <img src="docs/prints/07-publicacao.jpg" width="160" alt="Tela Publicação com comentários"> | <img src="docs/prints/08-notificacoes.jpg" width="160" alt="Tela Notificações"> | <img src="docs/prints/09-menu.jpg" width="160" alt="Menu lateral"> | <img src="docs/prints/10-sobre.jpg" width="160" alt="Tela Sobre o projeto"> |
+
+> Capturas da versão web em tamanho de celular (375 px), com as contas de demonstração.
+
 ---
 
 ## Pré-requisitos
