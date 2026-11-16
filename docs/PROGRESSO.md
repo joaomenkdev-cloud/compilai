@@ -2,8 +2,8 @@
 
 - [x] **Fase 1 — Leitura e plano** (PDF lido; tema A · CompilaAí aprovado)
 - [x] **Fase 2 — Esqueleto + navegação** (Stack → Drawer → Tabs, abas internas, Voltar no detalhe; placeholders)
-- [~] Fase 3 — Supabase + Auth (código pronto; falta projeto Supabase + .env + schema da Fase 4 para testar)
-- [ ] Fase 4 — Schema SQL
+- [x] Fase 3 — Supabase + Auth (código pronto; login real ainda a testar no app)
+- [x] Fase 4 — Schema SQL (aplicado no projeto `sooqpffnxpgsmhjvdcyw`, org compilai: 5 tabelas com RLS, 12 políticas, 2 gatilhos; Confirm email desligado)
 - [ ] Fase 5 — Publicar + Feed
 - [ ] Fase 6 — Explorar, Perfil, Pessoa, Editar perfil
 - [ ] Fase 7 — Detalhe, curtidas, comentários
