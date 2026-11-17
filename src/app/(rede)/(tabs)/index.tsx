@@ -6,6 +6,7 @@ import { AbasInternas } from '@/components/AbasInternas';
 import { BannerOffline } from '@/components/BannerOffline';
 import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { CaixaPublicar } from '@/components/CaixaPublicar';
+import { FaixaNovidades } from '@/components/FaixaNovidades';
 import { ColunaComunidade } from '@/components/ColunaComunidade';
 import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
@@ -14,6 +15,7 @@ import { PostCard } from '@/components/PostCard';
 import { cores, espaco, larguraLeitura, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
+import { useNovasPublicacoes } from '@/hooks/useNovasPublicacoes';
 import { useLayout } from '@/hooks/useLayout';
 import { ehErroDeRede, mensagemDeErro } from '@/lib/erros';
 import { buscarFeed, buscarPosts, type Post } from '@/services/postService';
@@ -109,6 +111,16 @@ export default function Inicio() {
     setAba(nova);
   }
 
+  // Tempo real: conta posts novos de outras pessoas enquanto o feed está aberto.
+  const { novas, limpar } = useNovasPublicacoes(usuarioId);
+  const lista = useRef<FlatList<Post>>(null);
+  function verNovas() {
+    limpar();
+    lista.current?.scrollToOffset({ offset: 0, animated: true });
+    if (aba !== 'recentes') mudarAba('recentes');
+    else carregar();
+  }
+
   function puxarParaAtualizar() {
     setAtualizando(true);
     carregar();
@@ -118,6 +130,7 @@ export default function Inicio() {
     (novo: Post) => setPosts((lista) => lista.map((p) => (p.id === novo.id ? novo : p))),
     [],
   );
+  const removerPost = useCallback((id: string) => setPosts((lista) => lista.filter((p) => p.id !== id)), []);
   const { curtindo, alternar } = useCurtir(usuarioId, atualizarPost);
 
   function conteudoVazio() {
@@ -132,16 +145,18 @@ export default function Inicio() {
 
   const feed = (
     <FlatList
+      ref={lista}
       style={estilos.fundo}
       contentContainerStyle={estilos.conteudo}
       data={posts}
       keyExtractor={(p) => p.id}
-      renderItem={({ item }) => <PostCard post={item} curtindo={curtindo.has(item.id)} aoCurtir={alternar} />}
+      renderItem={({ item }) => <PostCard post={item} curtindo={curtindo.has(item.id)} aoCurtir={alternar} aoAtualizar={atualizarPost} aoRemover={removerPost} />}
       ItemSeparatorComponent={() => <View style={{ height: espaco.md }} />}
       ListHeaderComponent={
         <View style={estilos.cabecalho}>
           <CabecalhoTela secao="Início" titulo="Comunidade" />
           <CaixaPublicar />
+          {novas > 0 ? <FaixaNovidades quantidade={novas} aoPressionar={verNovas} /> : null}
           <AbasInternas
             abas={[
               { id: 'recentes', rotulo: 'Recentes' },

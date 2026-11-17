@@ -69,6 +69,7 @@ export function ConteudoPerfil({ pessoaId, ehProprio }: Props) {
     (novo: Post) => setPosts((lista) => lista.map((p) => (p.id === novo.id ? novo : p))),
     [],
   );
+  const removerPost = useCallback((id: string) => setPosts((lista) => lista.filter((p) => p.id !== id)), []);
   const { curtindo, alternar } = useCurtir(usuarioId, atualizarPost);
 
   if (carregando) return <View style={estilos.fundo}><Carregando texto="Carregando perfil…" /></View>;
@@ -152,7 +153,7 @@ export function ConteudoPerfil({ pessoaId, ehProprio }: Props) {
       contentContainerStyle={estilos.conteudo}
       data={aba === 'posts' ? posts : []}
       keyExtractor={(p) => p.id}
-      renderItem={({ item }) => <PostCard post={item} curtindo={curtindo.has(item.id)} aoCurtir={alternar} />}
+      renderItem={({ item }) => <PostCard post={item} curtindo={curtindo.has(item.id)} aoCurtir={alternar} aoAtualizar={atualizarPost} aoRemover={removerPost} />}
       ItemSeparatorComponent={() => <View style={{ height: espaco.md }} />}
       ListHeaderComponent={cabecalho}
       ListEmptyComponent={

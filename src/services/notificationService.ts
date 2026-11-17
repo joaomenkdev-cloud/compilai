@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 
 export type Aviso = {
   id: string;
-  tipo: 'curtida' | 'comentario';
+  tipo: 'curtida' | 'comentario' | 'resolvido';
   criado_em: string;
   lida_em: string | null;
   post_id: string;
@@ -15,7 +15,7 @@ export type Aviso = {
 
 type LinhaAviso = {
   id: string;
-  tipo: 'curtida' | 'comentario';
+  tipo: 'curtida' | 'comentario' | 'resolvido';
   criado_em: string;
   lida_em: string | null;
   post_id: string;

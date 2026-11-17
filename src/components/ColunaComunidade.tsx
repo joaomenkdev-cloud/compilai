@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/Avatar';
+import { ListaDestaques } from '@/components/ListaDestaques';
 import { cores, espaco, familia, fonte, raio, sombra, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useAvisos } from '@/contexts/AvisosProvider';
@@ -54,6 +55,8 @@ export function ColunaComunidade() {
           <Text style={estilos.textoBotao}>Ver notificações</Text>
         </Pressable>
       </View>
+
+      <ListaDestaques compacta />
 
       {/* Pessoas */}
       <View style={[estilos.cartao, sombra.card]}>

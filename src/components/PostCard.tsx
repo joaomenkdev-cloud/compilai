@@ -5,9 +5,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/Avatar';
 import { BotaoCurtir } from '@/components/BotaoCurtir';
+import { EtiquetaTipo } from '@/components/EtiquetaTipo';
+import { MenuDono } from '@/components/MenuDono';
+import { TextoComCodigo } from '@/components/TextoComCodigo';
 import { areaToque, cores, espaco, familia, fonte, pressionado, raio, sombra, estiloTema } from '@/constants/tema';
+import { useAuth } from '@/contexts/AuthProvider';
 import { tempoRelativo } from '@/lib/datas';
-import type { Post } from '@/services/postService';
+import { editarPost, excluirPost, TEXTO_MAXIMO, type Post } from '@/services/postService';
 
 type Props = {
   post: Post;
@@ -15,13 +19,27 @@ type Props = {
   aoCurtir: (post: Post) => void;
   /** No detalhe, o texto não é tocável (já estamos no post). */
   noDetalhe?: boolean;
+  /** Depois de editar: a lista troca o post pelo novo. */
+  aoAtualizar?: (post: Post) => void;
+  /** Depois de excluir: a lista tira o post (no detalhe, volta à tela anterior). */
+  aoRemover?: (postId: string) => void;
 };
 
 // Cartão de uma publicação. Cada parte tocável é um alvo separado para o leitor de tela:
 // nome (abre o perfil pelo ID), texto (abre o post pelo ID), curtir e comentários.
+// O menu ⋯ (editar/excluir) só aparece para quem escreveu o post.
 // memo: numa lista grande, só o cartão que mudou (ex.: curtido) é redesenhado.
-export const PostCard = memo(function PostCard({ post, curtindo, aoCurtir, noDetalhe = false }: Props) {
+export const PostCard = memo(function PostCard({
+  post,
+  curtindo,
+  aoCurtir,
+  noDetalhe = false,
+  aoAtualizar,
+  aoRemover,
+}: Props) {
   const router = useRouter();
+  const { usuario } = useAuth();
+  const ehDono = usuario?.id === post.autor_id;
   const abrirPost = () => router.push({ pathname: '/post/[id]', params: { id: post.id } });
   const abrirAutor = () => router.push({ pathname: '/pessoa/[id]', params: { id: post.autor_id } });
   const comentarios = post.comentarios === 1 ? '1 comentário' : `${post.comentarios} comentários`;
@@ -39,14 +57,39 @@ export const PostCard = memo(function PostCard({ post, curtindo, aoCurtir, noDet
           >
             <Text style={estilos.nome}>{post.autor_nome}</Text>
           </Pressable>
-          <Text style={estilos.data}>{tempoRelativo(post.criado_em)}</Text>
+          <Text style={estilos.data}>
+            {tempoRelativo(post.criado_em)}
+            {post.editado_em ? ' · editado' : ''}
+          </Text>
         </View>
+        <EtiquetaTipo tipo={post.tipo} resolvida={!!post.resolvido_por} />
+        {ehDono ? (
+          <MenuDono
+            oQue="publicação"
+            textoAtual={post.texto}
+            tipoAtual={post.tipo}
+            maximo={TEXTO_MAXIMO}
+            aoSalvar={async (texto, tipo) => {
+              const novoTipo = tipo ?? post.tipo;
+              await editarPost(post.id, texto, novoTipo);
+              aoAtualizar?.({
+                ...post,
+                texto: texto.trim(),
+                tipo: novoTipo,
+                editado_em: new Date().toISOString(),
+                resolvido_por: novoTipo === 'duvida' ? post.resolvido_por : null,
+              });
+            }}
+            aoExcluir={async () => {
+              await excluirPost(post.id);
+              aoRemover?.(post.id);
+            }}
+          />
+        ) : null}
       </View>
 
       {noDetalhe ? (
-        <Text style={[estilos.texto, estilos.textoDetalhe]} selectable>
-          {post.texto}
-        </Text>
+        <TextoComCodigo texto={post.texto} estiloTexto={[estilos.texto, estilos.textoDetalhe]} selecionavel />
       ) : (
         <Pressable
           onPress={abrirPost}
@@ -54,9 +97,7 @@ export const PostCard = memo(function PostCard({ post, curtindo, aoCurtir, noDet
           accessibilityHint="Abre a publicação e os comentários"
           style={({ pressed }) => pressed && estilos.textoPressionado}
         >
-          <Text style={estilos.texto} numberOfLines={8}>
-            {post.texto}
-          </Text>
+          <TextoComCodigo texto={post.texto} estiloTexto={estilos.texto} linhas={8} />
         </Pressable>
       )}
 
@@ -89,8 +130,8 @@ const estilos = estiloTema(() => StyleSheet.create({
     padding: espaco.lg,
     gap: espaco.md,
   },
-  topo: { flexDirection: 'row', alignItems: 'center', gap: espaco.md },
-  autor: { flex: 1, gap: 1 },
+  topo: { flexDirection: 'row', alignItems: 'center', gap: espaco.sm },
+  autor: { flex: 1, gap: 1, marginLeft: 4 },
   nome: { fontFamily: familia.negrito, fontSize: 16, color: cores.texto },
   data: { ...fonte.pequena, color: cores.textoSuave },
   texto: { ...fonte.corpo, color: cores.texto },

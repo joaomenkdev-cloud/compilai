@@ -15,7 +15,8 @@ import { cores, espaco, fonte, raio, familia, sombra, estiloTema } from '@/const
 import { useAuth } from '@/contexts/AuthProvider';
 import { horaCurta } from '@/lib/datas';
 import { ehErroDeRede, mensagemDeErro } from '@/lib/erros';
-import { publicar, TEXTO_MAXIMO } from '@/services/postService';
+import { SeletorTipo } from '@/components/SeletorTipo';
+import { publicar, TEXTO_MAXIMO, type TipoPost } from '@/services/postService';
 import { apagarRascunho, lerRascunho, salvarRascunho } from '@/storage/draftStore';
 
 type AbaPublicar = 'escrever' | 'rascunho';
@@ -30,6 +31,9 @@ export default function Publicar() {
 
   const [aba, setAba] = useState<AbaPublicar>('escrever');
   const [texto, setTexto] = useState('');
+  // Tipo da publicação (Projeto, Dúvida ou Conquista). Fica só na tela: o rascunho do
+  // PDF guarda apenas o texto (tabela drafts: dono, texto).
+  const [tipo, setTipo] = useState<TipoPost>('projeto');
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
@@ -70,11 +74,12 @@ export default function Publicar() {
     setErro(null);
     setAviso(null);
     try {
-      await publicar(dono, texto);
+      await publicar(dono, texto, tipo);
       // Sucesso confirmado pelo banco: apaga SÓ o rascunho desta conta, limpa e vai ao Início.
       await apagarRascunho(dono).catch(() => {});
       setRascunho(null);
       setTexto('');
+      setTipo('projeto');
       router.navigate('/');
     } catch (e) {
       // Falha: o texto continua no campo para tentar de novo.
@@ -127,15 +132,28 @@ export default function Publicar() {
               </Text>
             </View>
           ) : null}
+          <SeletorTipo rotulo="Que tipo de publicação é?" valor={tipo} aoMudar={setTipo} />
           <CampoTexto
-            rotulo="O que você está construindo ou aprendendo?"
+            rotulo={
+              tipo === 'duvida'
+                ? 'Qual é a sua dúvida?'
+                : tipo === 'conquista'
+                  ? 'O que você conquistou?'
+                  : 'O que você está construindo ou aprendendo?'
+            }
             value={texto}
             onChangeText={(t) => {
               setTexto(t);
               setAviso(null);
             }}
             multiline
-            placeholder="Ex.: Terminei a tela de login do meu app em React Native!"
+            placeholder={
+              tipo === 'duvida'
+                ? 'Ex.: Por que meu FlatList re-renderiza tudo quando curto um item?'
+                : tipo === 'conquista'
+                  ? 'Ex.: Passei na prova de banco de dados!'
+                  : 'Ex.: Terminei a tela de login do meu app em React Native!'
+            }
             style={estilos.campoGrande}
             textAlignVertical="top"
             erro={passou ? `Passou do limite de ${TEXTO_MAXIMO} caracteres.` : null}
@@ -160,6 +178,7 @@ export default function Publicar() {
             desativado={tamanho === 0 || enviando}
           />
           <Text style={estilos.dica}>O rascunho fica só neste aparelho e só para a sua conta.</Text>
+          <Text style={estilos.dica}>Dica: coloque código entre ``` (três crases) para ele aparecer formatado.</Text>
         </>
       ) : rascunho === undefined ? null : rascunho === null ? (
         <EstadoVazio icone="document-outline" titulo="Nenhum rascunho salvo" mensagem="Na aba Escrever, toque em Salvar rascunho para guardar o texto aqui." />

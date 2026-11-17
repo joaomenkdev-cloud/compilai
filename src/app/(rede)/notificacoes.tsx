@@ -14,9 +14,16 @@ import { mensagemDeErro } from '@/lib/erros';
 import { listarAvisos, marcarComoLido, type Aviso } from '@/services/notificationService';
 
 function frase(aviso: Aviso) {
-  return aviso.tipo === 'curtida'
-    ? `${aviso.ator_nome} curtiu sua publicação`
-    : `${aviso.ator_nome} comentou na sua publicação`;
+  if (aviso.tipo === 'curtida') return `${aviso.ator_nome} curtiu sua publicação`;
+  if (aviso.tipo === 'resolvido') return `${aviso.ator_nome} marcou seu comentário como solução`;
+  return `${aviso.ator_nome} comentou na sua publicação`;
+}
+
+// Ícone e cores de cada tipo de aviso (o texto ao lado diz o mesmo: a cor não é a única pista).
+function visual(tipo: Aviso['tipo']) {
+  if (tipo === 'curtida') return { icone: 'heart' as const, cor: cores.destaque, fundo: cores.destaqueClaro };
+  if (tipo === 'resolvido') return { icone: 'checkmark-circle' as const, cor: cores.sucesso, fundo: cores.sucessoClaro };
+  return { icone: 'chatbubble' as const, cor: cores.primaria, fundo: cores.primariaClara };
 }
 
 export default function Notificacoes() {
@@ -129,12 +136,8 @@ export default function Notificacoes() {
           >
             {/* Não lida = marcador + rótulo em texto, não só cor. */}
             <View style={[estilos.marcador, naoLida ? estilos.marcadorNovo : estilos.marcadorLido]} />
-            <View style={[estilos.circuloIcone, item.tipo === 'curtida' ? estilos.circuloCurtida : estilos.circuloComentario]}>
-              <Ionicons
-                name={item.tipo === 'curtida' ? 'heart' : 'chatbubble'}
-                size={20}
-                color={item.tipo === 'curtida' ? cores.destaque : cores.primaria}
-              />
+            <View style={[estilos.circuloIcone, { backgroundColor: visual(item.tipo).fundo }]}>
+              <Ionicons name={visual(item.tipo).icone} size={20} color={visual(item.tipo).cor} />
             </View>
             <View style={estilos.corpo}>
               {naoLida ? <Text style={estilos.etiqueta}>Não lida</Text> : null}
@@ -182,8 +185,6 @@ const estilos = estiloTema(() => StyleSheet.create({
   },
   avisoNovo: { borderColor: cores.destaque, borderWidth: 1.5, backgroundColor: cores.destaqueClaro },
   circuloIcone: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  circuloCurtida: { backgroundColor: cores.destaqueClaro },
-  circuloComentario: { backgroundColor: cores.primariaClara },
   pressionado: { opacity: 0.8 },
   marcador: { width: 10, height: 10, borderRadius: 5 },
   marcadorNovo: { backgroundColor: cores.destaque },

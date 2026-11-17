@@ -60,6 +60,8 @@ npm install
    O script é idempotente (pode rodar de novo sem quebrar). Ele cria, nesta ordem: `profiles` → `posts` →
    `likes` → `comments` → `notifications` → função `avisar_autor()` + gatilhos, com **RLS ligado em todas as tabelas**.
    Como o script recria políticas (`drop policy if exists`), o painel pede uma confirmação: confirme.
+   **Depois**, faça o mesmo com [`supabase/extensoes.sql`](supabase/extensoes.sql) (recursos extras: tipo da
+   publicação, dúvida resolvida, editar/excluir, destaques e tempo real). Ele não altera nada do `schema.sql`.
 3. Em **Authentication → Sign In / Providers**, desligue **Confirm email** para facilitar os testes
    (o app também funciona com ele ligado: explica que é preciso confirmar o e-mail antes de entrar).
 4. Em **Connect** (ou Settings → API Keys), copie a **Project URL** e a **chave publicável** (`sb_publishable_…`).
@@ -186,7 +188,8 @@ Toda chamada ao Supabase passa por `services/`; todo acesso ao SQLite passa por 
   fica travado durante a requisição para evitar toque duplo.
 - **Ajuste em relação ao PDF.** A consulta do feed usa `profiles!posts_autor_id_fkey(nome)` em vez de
   `profiles(nome)`: como `likes` e `comments` também ligam `posts` a `profiles`, a forma curta fica ambígua
-  (erro PGRST201) depois que essas tabelas existem.
+  (erro PGRST201) depois que essas tabelas existem. Pelo mesmo motivo a contagem de comentários usa
+  `comments!comments_post_id_fkey(count)`: a coluna `posts.resolvido_por` também aponta para `comments`.
 
 ## Verificação
 
@@ -197,9 +200,25 @@ npm test              # testes automáticos das regras (validação, datas, erro
 npm run teste:autorizacao   # Teste 4, contra o Supabase
 ```
 
+## Recursos extras (além do PDF)
+
+Tudo abaixo **acrescenta** ao que o PDF pede, sem mudar a estrutura dele: continuam os 4 destinos na barra
+inferior, 2 abas internas por destino, o menu lateral só com Comunidade, Notificações, Sobre e Sair, o texto de
+1 a 500 caracteres, a conversa em ordem cronológica, o RLS e os avisos criados pelo banco. O SQL fica em
+[`supabase/extensoes.sql`](supabase/extensoes.sql).
+
+| Recurso | Como funciona | Onde a regra é garantida |
+|---|---|---|
+| **Tipo da publicação** | Ao publicar, escolhe **Projeto**, **Dúvida** ou **Conquista**; o card mostra a etiqueta (ícone + texto). No Explorar → Posts dá para filtrar por tipo, mesmo sem digitar. | `check (tipo in (...))` na tabela `posts` |
+| **Dúvida resolvida** | Em uma dúvida, o autor toca em **Marcar como solução** no comentário que resolveu. O post vira **Resolvida**, o comentário ganha o selo e um resumo aparece acima da conversa (a conversa continua em ordem cronológica). Quem ajudou recebe um aviso. | Gatilho `checar_resolucao` (só dúvidas, só comentário do próprio post), política RLS (só o autor) e gatilho `avisar_resolucao` (o aviso nasce no banco, como os do PDF) |
+| **Código nos posts** | Texto entre ``` (três crases) aparece como bloco de código, com fonte de programação e fundo escuro. `` ```tsx `` mostra a linguagem. | `src/lib/codigo.ts` (com testes) |
+| **Editar e excluir** | Menu **⋯** no próprio post ou comentário, com confirmação antes de excluir. Itens editados mostram "· editado". Excluir um post apaga curtidas, comentários e avisos dele. | Políticas RLS `editar_proprio` / `excluir_proprio` + `grant` só das colunas permitidas |
+| **Destaques da semana** | Os posts mais curtidos dos últimos 7 dias, no Explorar → Posts e na coluna da direita (computador). | View `destaques_semana` com `security_invoker` (respeita o RLS) |
+| **Tempo real** | No Início aparece **"2 novas publicações · toque para ver"** quando alguém publica, e o sino de avisos atualiza na hora. | Supabase Realtime (também respeita o RLS: cada pessoa só recebe o que já poderia ler) |
+
 ### Detalhes que deixam o app mais redondo
 
-- **Sino de avisos** no cabeçalho, com o total de não lidas (atualiza ao voltar para o app e a cada minuto).
+- **Sino de avisos** no cabeçalho, com o total de não lidas (em tempo real; também confere ao voltar para o app e a cada minuto).
 - **Busca automática** no Explorar: pesquisa 400 ms depois que a pessoa para de digitar.
 - **Aviso de sem internet** em Publicar (via NetInfo), sugerindo salvar como rascunho.
 - **Carregamento em esqueleto** (respeita "reduzir movimento") e estados vazios com ícone.

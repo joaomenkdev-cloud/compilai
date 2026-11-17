@@ -9,12 +9,14 @@ import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
+import { ListaDestaques } from '@/components/ListaDestaques';
 import { PostCard } from '@/components/PostCard';
+import { SeletorTipo } from '@/components/SeletorTipo';
 import { areaToque, cores, espaco, fonte, raio, sombra, familia, larguraLeitura, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
 import { mensagemDeErro } from '@/lib/erros';
-import { buscarPosts, type Post } from '@/services/postService';
+import { buscarPosts, type Post, type TipoPost } from '@/services/postService';
 import { buscarPessoas, type Perfil } from '@/services/profileService';
 
 type AbaExplorar = 'pessoas' | 'posts';
@@ -32,6 +34,8 @@ export default function Explorar() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [buscando, setBuscando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  // Filtro por tipo na aba Posts (null = todos). Com um tipo escolhido, dá para listar sem digitar nada.
+  const [tipoFiltro, setTipoFiltro] = useState<TipoPost | null>(null);
   const ultimaBusca = useRef(0);
   // Busca automática: espera 400 ms sem digitar antes de consultar o banco
   // (evita uma consulta por letra digitada).
@@ -43,6 +47,11 @@ export default function Explorar() {
   function aoDigitar(texto: string) {
     setTermo(texto);
     if (temporizador.current) clearTimeout(temporizador.current);
+    if (!texto.trim() && aba === 'posts' && tipoFiltro) {
+      // Campo vazio mas com tipo escolhido: lista todos os posts desse tipo.
+      temporizador.current = setTimeout(() => buscar('posts', '', tipoFiltro), 400);
+      return;
+    }
     if (!texto.trim()) {
       // Campo vazio: volta ao estado inicial ("Digite um termo...").
       ultimaBusca.current++;
@@ -56,10 +65,11 @@ export default function Explorar() {
     temporizador.current = setTimeout(() => buscar(aba, texto), 400);
   }
 
-  async function buscar(abaAlvo: AbaExplorar = aba, termoAlvo: string = termo) {
+  async function buscar(abaAlvo: AbaExplorar = aba, termoAlvo: string = termo, tipoAlvo: TipoPost | null = tipoFiltro) {
     if (temporizador.current) clearTimeout(temporizador.current);
     const limpo = termoAlvo.trim();
-    if (!usuarioId || limpo.length === 0) return;
+    const soPorTipo = abaAlvo === 'posts' && !!tipoAlvo;
+    if (!usuarioId || (limpo.length === 0 && !soPorTipo)) return;
     const numero = ++ultimaBusca.current;
     setBuscando(true);
     setErro(null);
@@ -68,7 +78,7 @@ export default function Explorar() {
         const r = await buscarPessoas(limpo);
         if (numero === ultimaBusca.current) setPessoas(r);
       } else {
-        const r = await buscarPosts(usuarioId, { termo: limpo });
+        const r = await buscarPosts(usuarioId, { termo: limpo || undefined, tipo: tipoAlvo ?? undefined });
         if (numero === ultimaBusca.current) setPosts(r);
       }
       if (numero === ultimaBusca.current) setTermoBuscado(limpo);
@@ -86,13 +96,26 @@ export default function Explorar() {
     setPosts([]);
     setTermoBuscado(null);
     // Se já havia um termo, repete a busca na nova aba.
-    if (termo.trim()) buscar(nova, termo);
+    if (termo.trim() || (nova === 'posts' && tipoFiltro)) buscar(nova, termo);
+  }
+
+  function mudarTipo(novo: TipoPost | null) {
+    setTipoFiltro(novo);
+    if (termo.trim() || novo) {
+      buscar('posts', termo, novo);
+    } else {
+      ultimaBusca.current++;
+      setPosts([]);
+      setTermoBuscado(null);
+      setBuscando(false);
+    }
   }
 
   const atualizarPost = useCallback(
     (novo: Post) => setPosts((lista) => lista.map((p) => (p.id === novo.id ? novo : p))),
     [],
   );
+  const removerPost = useCallback((id: string) => setPosts((lista) => lista.filter((p) => p.id !== id)), []);
   const { curtindo, alternar } = useCurtir(usuarioId, atualizarPost);
 
   const cabecalho = (
@@ -132,6 +155,9 @@ export default function Explorar() {
           </Pressable>
         </View>
       </View>
+      {aba === 'posts' ? (
+        <SeletorTipo rotulo="Filtrar por tipo" valor={tipoFiltro} aoMudar={mudarTipo} comTodos />
+      ) : null}
     </View>
   );
 
@@ -139,6 +165,8 @@ export default function Explorar() {
     if (buscando) return <Carregando texto="Buscando…" />;
     if (erro) return <EstadoErro mensagem={erro} aoTentarDeNovo={() => buscar()} />;
     if (termoBuscado === null) {
+      // Aba Posts antes de buscar: mostra os destaques da semana.
+      if (aba === 'posts') return <ListaDestaques />;
       return (
         <EstadoVazio
           icone={aba === 'pessoas' ? 'people-outline' : 'search-outline'}
@@ -146,6 +174,9 @@ export default function Explorar() {
           mensagem="Digite um termo e toque na lupa."
         />
       );
+    }
+    if (termoBuscado === '') {
+      return <EstadoVazio icone="file-tray-outline" titulo="Nenhum resultado" mensagem="Ainda não há publicações desse tipo." />;
     }
     return <EstadoVazio icone="file-tray-outline" titulo="Nenhum resultado" mensagem={`Nada encontrado para "${termoBuscado}". Ajuste o termo e tente de novo.`} />;
   }
@@ -195,7 +226,7 @@ export default function Explorar() {
       ListHeaderComponent={cabecalho}
       ListEmptyComponent={vazio()}
       ItemSeparatorComponent={() => <View style={{ height: espaco.md }} />}
-      renderItem={({ item }) => <PostCard post={item} curtindo={curtindo.has(item.id)} aoCurtir={alternar} />}
+      renderItem={({ item }) => <PostCard post={item} curtindo={curtindo.has(item.id)} aoCurtir={alternar} aoAtualizar={atualizarPost} aoRemover={removerPost} />}
     />
   );
 }
