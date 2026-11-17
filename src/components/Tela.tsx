@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
 
-import { cores, espaco } from '@/constants/tema';
+import { cores, espaco, larguraLeitura } from '@/constants/tema';
 
 // Contêiner padrão das telas simples: fundo creme, rolagem e proteção contra o teclado.
 // (Telas com FlatList cuidam da própria rolagem.)
@@ -23,5 +23,5 @@ export function Tela({ children }: { children: ReactNode }) {
 
 const estilos = StyleSheet.create({
   fundo: { flex: 1, backgroundColor: cores.fundo },
-  conteudo: { padding: espaco.lg, paddingBottom: espaco.xxl, gap: espaco.lg },
+  conteudo: { ...larguraLeitura, padding: espaco.lg, paddingBottom: espaco.xxl, gap: espaco.lg },
 });

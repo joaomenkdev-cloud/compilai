@@ -85,5 +85,9 @@ export const sombra = {
 // Leve "afundar" ao tocar (feedback em até 100 ms, sem mexer no layout).
 export const pressionado = { transform: [{ scale: 0.98 }], opacity: 0.92 } as const;
 
+// Largura máxima do conteúdo: em telas grandes nada estica de ponta a ponta
+// (linhas de texto longas demais cansam a leitura). No celular, ocupa a tela toda.
+export const larguraLeitura = { width: '100%', maxWidth: 680, alignSelf: 'center' } as const;
+
 // Toda área tocável deve ter pelo menos 44×44 (acessibilidade).
 export const areaToque = 44;

@@ -49,16 +49,21 @@ export function ConteudoDrawer({ navigation }: DrawerContentComponentProps) {
     router.replace('/login');
   };
 
+  const notificacoes: Item = {
+    rotulo: 'Notificações',
+    icone: 'notifications-outline',
+    iconeAtivo: 'notifications',
+    rota: '/notificacoes',
+    contador: naoLidos,
+  };
+  const sobre: Item = { rotulo: 'Sobre', icone: 'information-circle-outline', iconeAtivo: 'information-circle', rota: '/sobre' };
+
+  // Exatamente o que o PDF pede (p.11): só Comunidade, Notificações, Sobre e Sair.
+  // Início, Explorar, Publicar e Perfil ficam na barra inferior.
   const itens: Item[] = [
     { rotulo: 'Comunidade', icone: 'people-outline', iconeAtivo: 'people', rota: '/' },
-    {
-      rotulo: 'Notificações',
-      icone: 'notifications-outline',
-      iconeAtivo: 'notifications',
-      rota: '/notificacoes',
-      contador: naoLidos,
-    },
-    { rotulo: 'Sobre', icone: 'information-circle-outline', iconeAtivo: 'information-circle', rota: '/sobre' },
+    notificacoes,
+    sobre,
   ];
 
   // "Comunidade" fica ativo em qualquer aba (Início, Explorar, Publicar, Perfil).

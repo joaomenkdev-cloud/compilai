@@ -5,13 +5,16 @@ import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import { AbasInternas } from '@/components/AbasInternas';
 import { BannerOffline } from '@/components/BannerOffline';
 import { CabecalhoTela } from '@/components/CabecalhoTela';
+import { CaixaPublicar } from '@/components/CaixaPublicar';
+import { ColunaComunidade } from '@/components/ColunaComunidade';
 import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
 import { PostCard } from '@/components/PostCard';
-import { cores, espaco } from '@/constants/tema';
+import { cores, espaco, larguraLeitura } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
+import { useLayout } from '@/hooks/useLayout';
 import { ehErroDeRede, mensagemDeErro } from '@/lib/erros';
 import { buscarFeed, buscarPosts, type Post } from '@/services/postService';
 import { lerFeed } from '@/storage/feedCache';
@@ -23,6 +26,7 @@ const PRIMEIRO_CARREGAMENTO = 'O primeiro carregamento precisa de internet. Cone
 export default function Inicio() {
   const { usuario } = useAuth();
   const usuarioId = usuario?.id;
+  const { tresColunas } = useLayout();
 
   const [aba, setAba] = useState<AbaInicio>('recentes');
   const [posts, setPosts] = useState<Post[]>([]);
@@ -126,7 +130,7 @@ export default function Inicio() {
     );
   }
 
-  return (
+  const feed = (
     <FlatList
       style={estilos.fundo}
       contentContainerStyle={estilos.conteudo}
@@ -137,6 +141,7 @@ export default function Inicio() {
       ListHeaderComponent={
         <View style={estilos.cabecalho}>
           <CabecalhoTela secao="Início" titulo="Comunidade" />
+          <CaixaPublicar />
           <AbasInternas
             abas={[
               { id: 'recentes', rotulo: 'Recentes' },
@@ -156,10 +161,22 @@ export default function Inicio() {
       }
     />
   );
+
+  // Tela larga (computador): feed no centro + coluna da comunidade à direita.
+  if (tresColunas) {
+    return (
+      <View style={estilos.colunas}>
+        {feed}
+        <ColunaComunidade />
+      </View>
+    );
+  }
+  return feed;
 }
 
 const estilos = StyleSheet.create({
   fundo: { flex: 1, backgroundColor: cores.fundo },
-  conteudo: { padding: espaco.lg, paddingBottom: espaco.xxl },
+  colunas: { flex: 1, flexDirection: 'row', backgroundColor: cores.fundo },
+  conteudo: { ...larguraLeitura, padding: espaco.lg, paddingBottom: espaco.xxl },
   cabecalho: { gap: espaco.lg, marginBottom: espaco.lg },
 });

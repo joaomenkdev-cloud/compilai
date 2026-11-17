@@ -10,7 +10,7 @@ import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
 import { PostCard } from '@/components/PostCard';
-import { areaToque, cores, espaco, fonte, raio, sombra, familia } from '@/constants/tema';
+import { areaToque, cores, espaco, fonte, raio, sombra, familia, larguraLeitura } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
 import { mensagemDeErro } from '@/lib/erros';
@@ -202,7 +202,7 @@ export default function Explorar() {
 
 const estilos = StyleSheet.create({
   fundo: { flex: 1, backgroundColor: cores.fundo },
-  conteudo: { padding: espaco.lg, paddingBottom: espaco.xxl },
+  conteudo: { ...larguraLeitura, padding: espaco.lg, paddingBottom: espaco.xxl },
   cabecalho: { gap: espaco.lg, marginBottom: espaco.lg },
   caixaBusca: { gap: espaco.xs },
   rotulo: { ...fonte.rotulo, color: cores.texto },

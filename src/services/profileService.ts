@@ -50,3 +50,15 @@ export async function atualizarPerfil(id: string, nome: string, bio: string): Pr
   if (error) throw error;
   return data;
 }
+
+/** Algumas pessoas da comunidade (coluna "Pessoas" do feed no computador), menos quem está logado. */
+export async function listarPessoas(excetoId: string, limite = 6): Promise<Perfil[]> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, nome, bio')
+    .neq('id', excetoId)
+    .order('nome')
+    .limit(limite);
+  if (error) throw error;
+  return data ?? [];
+}

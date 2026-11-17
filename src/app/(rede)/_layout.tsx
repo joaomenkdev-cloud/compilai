@@ -1,16 +1,25 @@
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { BarraBusca } from '@/components/BarraBusca';
 import { BotaoAvisos } from '@/components/BotaoAvisos';
 import { BotaoMenu } from '@/components/BotaoMenu';
 import { BotaoVoltar } from '@/components/BotaoVoltar';
 import { ConteudoDrawer } from '@/components/ConteudoDrawer';
 import { cores, familia } from '@/constants/tema';
 import { AvisosProvider } from '@/contexts/AvisosProvider';
+import { useLayout } from '@/hooks/useLayout';
 
 // Área protegida: um Drawer (menu lateral) que contém as Tabs como primeiro destino.
 // Sem sessão, esta área nem existe: o Stack.Protected do layout raiz manda para /login.
+//
+// Responsivo:
+//  - em qualquer tamanho, o menu lateral abre pelo ícone ☰ e fecha tocando fora
+//    (como o PDF pede) e lista só Comunidade, Notificações, Sobre e Sair;
+//  - no computador (≥ 1024 px) o cabeçalho ganha uma barra de busca.
 export default function LayoutRede() {
+  const { computador } = useLayout();
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AvisosProvider>
@@ -21,11 +30,18 @@ export default function LayoutRede() {
           backBehavior="history"
           screenOptions={({ navigation }) => ({
             title: '',
-            headerStyle: { backgroundColor: cores.fundo },
+            drawerType: 'front',
+            headerStyle: {
+              backgroundColor: computador ? cores.superficie : cores.fundo,
+              borderBottomWidth: computador ? 1 : 0,
+              borderBottomColor: cores.borda,
+            },
             headerShadowVisible: false,
             headerTintColor: cores.primaria,
             headerTitleStyle: { fontFamily: familia.tituloMedio },
             headerLeft: () => <BotaoMenu aoPressionar={() => navigation.toggleDrawer()} />,
+            headerTitle: computador ? () => <BarraBusca /> : '',
+            headerTitleAlign: 'left',
             headerRight: () => <BotaoAvisos />,
             drawerStyle: { backgroundColor: cores.fundo, width: 290 },
             // Fundo escurecido atrás do menu aberto, para o menu se destacar.

@@ -1,7 +1,7 @@
 import { DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
 import { SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
 import { useFonts } from 'expo-font';
-import { Stack, type ErrorBoundaryProps } from 'expo-router';
+import { DefaultTheme, Stack, ThemeProvider, type ErrorBoundaryProps } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
@@ -12,6 +12,20 @@ import { TelaMarca } from '@/components/TelaMarca';
 import { cores, espaco } from '@/constants/tema';
 import { AuthProvider, useAuth } from '@/contexts/AuthProvider';
 import { abrirBanco } from '@/lib/db';
+
+// Tema da navegação com as cores do app: o fundo creme aparece também nas bordas
+// e atrás da barra de abas (sem o cinza padrão).
+const temaNavegacao = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: cores.fundo,
+    card: cores.superficie,
+    primary: cores.primaria,
+    text: cores.texto,
+    border: cores.borda,
+  },
+};
 
 // Mantém a splash nativa na tela até a primeira tela em React estar pronta.
 SplashScreen.preventAutoHideAsync();
@@ -66,9 +80,11 @@ export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
 
 export default function LayoutRaiz() {
   return (
-    <AuthProvider>
-      <StatusBar style="dark" />
-      <Rotas />
-    </AuthProvider>
+    <ThemeProvider value={temaNavegacao}>
+      <AuthProvider>
+        <StatusBar style="dark" />
+        <Rotas />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

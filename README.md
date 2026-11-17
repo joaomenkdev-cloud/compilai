@@ -17,6 +17,16 @@ Enunciado: [`docs/PAM_II_Atividade_Rede_Social.pdf`](docs/PAM_II_Atividade_Rede_
 
 ## Telas
 
+**No computador** o app se adapta: conteúdo com largura de leitura, busca no topo, coluna da comunidade
+à direita e a barra de abas vira uma pílula centralizada. O menu lateral abre pelo ☰ e fecha tocando fora,
+igual ao celular.
+
+<img src="docs/prints/00-computador.jpg" width="720" alt="CompilaAí no computador: feed no centro e coluna da comunidade à direita">
+
+<img src="docs/prints/00-computador-menu.jpg" width="720" alt="CompilaAí no computador com o menu lateral aberto">
+
+**No celular:**
+
 | Entrar | Criar conta | Início | Explorar | Publicar |
 |:---:|:---:|:---:|:---:|:---:|
 | <img src="docs/prints/01-entrar.jpg" width="160" alt="Tela Entrar"> | <img src="docs/prints/02-criar-conta.jpg" width="160" alt="Tela Criar conta"> | <img src="docs/prints/03-inicio.jpg" width="160" alt="Tela Início com o feed"> | <img src="docs/prints/04-explorar.jpg" width="160" alt="Tela Explorar com busca de pessoas"> | <img src="docs/prints/05-publicar.jpg" width="160" alt="Tela Publicar"> |

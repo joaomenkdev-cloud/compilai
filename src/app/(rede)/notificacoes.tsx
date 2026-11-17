@@ -7,7 +7,7 @@ import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
-import { areaToque, cores, espaco, fonte, raio, familia, sombra } from '@/constants/tema';
+import { areaToque, cores, espaco, fonte, raio, familia, sombra, larguraLeitura } from '@/constants/tema';
 import { useAvisos } from '@/contexts/AvisosProvider';
 import { tempoRelativo } from '@/lib/datas';
 import { mensagemDeErro } from '@/lib/erros';
@@ -166,7 +166,7 @@ export default function Notificacoes() {
 
 const estilos = StyleSheet.create({
   fundo: { flex: 1, backgroundColor: cores.fundo },
-  conteudo: { padding: espaco.lg, paddingBottom: espaco.xxl },
+  conteudo: { ...larguraLeitura, padding: espaco.lg, paddingBottom: espaco.xxl },
   cabecalho: { gap: espaco.lg, marginBottom: espaco.sm },
   tituloSecao: { ...fonte.subtitulo, color: cores.primaria, marginTop: espaco.lg, marginBottom: espaco.sm },
   secaoVazia: { ...fonte.corpo, color: cores.textoSuave, fontStyle: 'italic' },
