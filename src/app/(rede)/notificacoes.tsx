@@ -11,7 +11,7 @@ import { areaToque, cores, espaco, fonte, raio, familia, sombra, larguraLeitura,
 import { useAvisos } from '@/contexts/AvisosProvider';
 import { tempoRelativo } from '@/lib/datas';
 import { mensagemDeErro } from '@/lib/erros';
-import { listarAvisos, marcarComoLido, type Aviso } from '@/services/notificationService';
+import { listarAvisos, marcarComoLido, marcarTodasComoLidas, type Aviso } from '@/services/notificationService';
 
 function frase(aviso: Aviso) {
   if (aviso.tipo === 'curtida') return `${aviso.ator_nome} curtiu sua publicação`;
@@ -34,6 +34,7 @@ export default function Notificacoes() {
   const [atualizando, setAtualizando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const abrindo = useRef(false);
+  const [marcandoTodas, setMarcandoTodas] = useState(false);
 
   const carregar = useCallback(async () => {
     try {
@@ -74,6 +75,21 @@ export default function Notificacoes() {
     router.push({ pathname: '/post/[id]', params: { id: aviso.post_id } });
   }
 
+  async function lerTodas() {
+    if (marcandoTodas) return;
+    setMarcandoTodas(true);
+    try {
+      const lidaEm = await marcarTodasComoLidas();
+      setAvisos((lista) => lista.map((a) => (a.lida_em ? a : { ...a, lida_em: lidaEm })));
+      setErro(null);
+      recarregarContador();
+    } catch (e) {
+      setErro(mensagemDeErro(e));
+    } finally {
+      setMarcandoTodas(false);
+    }
+  }
+
   const novas = avisos.filter((a) => !a.lida_em);
   const anteriores = avisos.filter((a) => a.lida_em);
   const secoes = [
@@ -112,9 +128,25 @@ export default function Notificacoes() {
         )
       }
       renderSectionHeader={({ section }) => (
-        <Text style={estilos.tituloSecao} accessibilityRole="header">
-          {section.titulo} ({section.data.length})
-        </Text>
+        <View style={estilos.linhaSecao}>
+          <Text style={estilos.tituloSecao} accessibilityRole="header">
+            {section.titulo} ({section.data.length})
+          </Text>
+          {section.titulo === 'Novas' && section.data.length > 0 ? (
+            <Pressable
+              onPress={lerTodas}
+              disabled={marcandoTodas}
+              accessibilityRole="button"
+              accessibilityLabel="Marcar todas como lidas"
+              accessibilityState={{ disabled: marcandoTodas, busy: marcandoTodas }}
+              hitSlop={8}
+              style={({ pressed }) => [estilos.botaoTodas, (pressed || marcandoTodas) && estilos.pressionado]}
+            >
+              <Ionicons name="checkmark-done" size={18} color={cores.primaria} />
+              <Text style={estilos.textoTodas}>{marcandoTodas ? 'Marcando…' : 'Marcar todas como lidas'}</Text>
+            </Pressable>
+          ) : null}
+        </View>
       )}
       renderSectionFooter={({ section }) =>
         section.data.length === 0 ? (
@@ -171,7 +203,26 @@ const estilos = estiloTema(() => StyleSheet.create({
   fundo: { flex: 1, backgroundColor: cores.fundo },
   conteudo: { ...larguraLeitura, padding: espaco.lg, paddingBottom: espaco.xxl },
   cabecalho: { gap: espaco.lg, marginBottom: espaco.sm },
-  tituloSecao: { ...fonte.subtitulo, color: cores.primaria, marginTop: espaco.lg, marginBottom: espaco.sm },
+  linhaSecao: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: espaco.sm,
+    marginTop: espaco.lg,
+    marginBottom: espaco.sm,
+  },
+  tituloSecao: { ...fonte.subtitulo, color: cores.primaria },
+  botaoTodas: {
+    minHeight: areaToque,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: espaco.md,
+    borderRadius: 999,
+    backgroundColor: cores.primariaClara,
+  },
+  textoTodas: { fontFamily: familia.negrito, fontSize: 14, color: cores.primaria },
   secaoVazia: { ...fonte.corpo, color: cores.textoSuave, fontStyle: 'italic' },
   aviso: {
     minHeight: areaToque + 20,

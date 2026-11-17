@@ -123,6 +123,11 @@ do $$ begin
                  where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'notifications') then
     alter publication supabase_realtime add table public.notifications;
   end if;
+  -- Comentários: a conversa do detalhe do post atualiza sozinha quando alguém comenta.
+  if not exists (select 1 from pg_publication_tables
+                 where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'comments') then
+    alter publication supabase_realtime add table public.comments;
+  end if;
 end $$;
 
 create index if not exists posts_tipo_idx on public.posts (tipo, criado_em desc);

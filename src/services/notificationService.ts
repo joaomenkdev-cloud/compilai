@@ -60,3 +60,14 @@ export async function marcarComoLido(id: string): Promise<string> {
   if (error) throw error;
   return agora;
 }
+
+/**
+ * "Marcar todas como lidas": grava lida_em em todos os avisos ainda não lidos.
+ * A RLS só deixa alterar os avisos cujo destino é a pessoa logada.
+ */
+export async function marcarTodasComoLidas(): Promise<string> {
+  const agora = new Date().toISOString();
+  const { error } = await supabase.from('notifications').update({ lida_em: agora }).is('lida_em', null);
+  if (error) throw error;
+  return agora;
+}

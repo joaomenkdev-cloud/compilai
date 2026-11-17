@@ -79,3 +79,42 @@ RESULTADO: PASSOU ✅ — B não conseguiu alterar o perfil de A
 - [ ] Saia e entre de novo com **A** → o rascunho de A continua lá.
 
 **Evidência esperada:** feed e rascunho disponíveis sem internet; dados isolados por conta.
+
+---
+
+## Extras (além do PDF)
+
+> Roteiro opcional dos recursos a mais. Pré-requisito: `supabase/extensoes.sql` aplicado.
+> Nenhum deles muda os 5 testes acima.
+
+**Tipos de post e dúvida resolvida**
+
+- [ ] Com **A**, em Publicar escolha **Dúvida** e publique. O card mostra a etiqueta "Dúvida".
+- [ ] Com **B**, comente na dúvida.
+- [ ] Com **A**, abra o post → **Marcar como solução** no comentário de B. Aparece o resumo "Resolvida" e o comentário fica destacado, **sem sair da ordem cronológica**.
+- [ ] Com **B**: chega o aviso "A marcou seu comentário como solução" (criado pelo banco).
+
+**Código nos posts**
+
+- [ ] Publique um texto com um bloco entre ```` ``` ```` (ex.: ```` ```js ```` … ```` ``` ````). O trecho aparece em fonte monoespaçada, num bloco escuro.
+
+**Editar e excluir**
+
+- [ ] No ⋯ do próprio post: **Editar** → o card mostra "· editado". **Excluir** pede confirmação.
+- [ ] Com **B**, o ⋯ não aparece nos posts de A (e o banco recusa, como no Teste 4).
+
+**Tempo real**
+
+- [ ] Abra o Início com **A** em um aparelho e publique com **B** em outro: em **A** aparece "1 nova publicação · toque para ver".
+- [ ] Deixe o mesmo post aberto nos dois: o comentário de **B** aparece em **A** sem puxar a tela.
+- [ ] O contador de Notificações no menu de **A** sobe sozinho quando **B** curte.
+
+**Notificações**
+
+- [ ] Com vários avisos novos, toque **Marcar todas como lidas**: todos vão para "Anteriores" e o contador do menu zera.
+
+**Perfil: áreas e stacks**
+
+- [ ] Editar perfil → escolha até 3 áreas e até 15 stacks (a busca filtra a lista). Salve.
+- [ ] No perfil, toque numa stack (ex.: **TypeScript**) → Explorar mostra "Quem usa TypeScript".
+- [ ] Explorar com o campo vazio mostra os **Destaques da semana**; o filtro de tipo restringe a busca de posts.

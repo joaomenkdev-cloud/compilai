@@ -16,6 +16,7 @@ import { PostCard } from '@/components/PostCard';
 import { TextoComCodigo } from '@/components/TextoComCodigo';
 import { areaToque, cores, espaco, familia, fonte, raio, sombra, larguraLeitura, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
+import { useConversaAoVivo } from '@/hooks/useConversaAoVivo';
 import { useCurtir } from '@/hooks/useCurtir';
 import { tempoRelativo } from '@/lib/datas';
 import { mensagemDeErro } from '@/lib/erros';
@@ -76,6 +77,9 @@ function DetalhePost({ postId }: { postId: string }) {
       carregar();
     }, [carregar]),
   );
+
+  // Conversa ao vivo: novos comentários, edições e a solução aparecem sem puxar a tela.
+  useConversaAoVivo(postId, carregar);
 
   const { curtindo, alternar } = useCurtir(usuarioId, setPost);
 

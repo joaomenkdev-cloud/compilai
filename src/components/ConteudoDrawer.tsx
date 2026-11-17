@@ -141,7 +141,8 @@ export function ConteudoDrawer({ navigation }: DrawerContentComponentProps) {
                 onPress={() => definir(o.valor)}
                 accessibilityRole="radio"
                 accessibilityLabel={o.rotulo}
-                accessibilityState={{ selected: sel }}
+                accessibilityState={{ checked: sel }}
+                aria-checked={sel}
                 style={[estilos.opcao, sel && estilos.opcaoAtiva]}
               >
                 <Ionicons name={o.icone} size={18} color={sel ? cores.primaria : cores.textoSuave} />
