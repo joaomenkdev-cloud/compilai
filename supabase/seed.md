@@ -41,3 +41,12 @@ Entre como **Caio** e:
 - no post do FlatList, comente: "Tenta usar keyExtractor e tirar funções criadas dentro do renderItem."
 
 Volte para a **Bia**: o menu lateral mostra os avisos não lidos em Notificações.
+
+## Áreas e stacks (perfil)
+
+Em **Editar perfil**:
+
+- **Bia** — áreas: Mobile, Front-end · stacks: React Native, Expo, TypeScript, JavaScript, React, SQLite, Figma.
+- **Caio** — áreas: Back-end, Dados e IA · stacks: Python, FastAPI, PostgreSQL, Supabase, Docker, Pandas, Git, TypeScript.
+
+Depois toque em **TypeScript** no perfil de qualquer um: o Explorar mostra "Quem usa TypeScript" com os dois.

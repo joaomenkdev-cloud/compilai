@@ -6,16 +6,20 @@ import { Botao } from '@/components/Botao';
 import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { CampoTexto } from '@/components/CampoTexto';
 import { EstadoErro } from '@/components/EstadoErro';
+import { SeletorAreas, SeletorStacks } from '@/components/SeletorStacks';
 import { Tela } from '@/components/Tela';
 import { cores, espaco, fonte, raio, familia, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { mensagemDeErro } from '@/lib/erros';
+import { validarAreas, validarStacks } from '@/lib/validacao';
 import { atualizarPerfil, BIO_MAXIMA, NOME_MAXIMO } from '@/services/profileService';
 
 export default function EditarPerfil() {
   const { usuario, perfil, atualizarPerfil: avisarContexto } = useAuth();
   const [nome, setNome] = useState(perfil?.nome ?? '');
   const [bio, setBio] = useState(perfil?.bio ?? '');
+  const [areas, setAreas] = useState<string[]>(perfil?.areas ?? []);
+  const [stacks, setStacks] = useState<string[]>(perfil?.stacks ?? []);
   const [erroNome, setErroNome] = useState<string | null>(null);
   const [erroBio, setErroBio] = useState<string | null>(null);
   const [erroGeral, setErroGeral] = useState<string | null>(null);
@@ -35,6 +39,8 @@ export default function EditarPerfil() {
     useCallback(() => {
       setNome(perfilAtual.current?.nome ?? '');
       setBio(perfilAtual.current?.bio ?? '');
+      setAreas(perfilAtual.current?.areas ?? []);
+      setStacks(perfilAtual.current?.stacks ?? []);
       setErroNome(null);
       setErroBio(null);
       setErroGeral(null);
@@ -55,11 +61,16 @@ export default function EditarPerfil() {
     setErroGeral(null);
     setSucesso(false);
     if (eNome || eBio) return;
+    const eListas = validarAreas(areas) ?? validarStacks(stacks);
+    if (eListas) {
+      setErroGeral(eListas);
+      return;
+    }
 
     setSalvando(true);
     try {
       // Grava com o ID da SESSÃO (nunca um ID vindo da tela).
-      const salvo = await atualizarPerfil(usuario.id, nome, bio);
+      const salvo = await atualizarPerfil(usuario.id, nome, bio, areas, stacks);
       avisarContexto(salvo);
       setSucesso(true); // só confirma depois do sucesso do Supabase
     } catch (e) {
@@ -99,6 +110,20 @@ export default function EditarPerfil() {
       <Text style={estilos.contador} accessibilityLabel={`${bio.trim().length} de ${BIO_MAXIMA} caracteres`}>
         {bio.trim().length}/{BIO_MAXIMA}
       </Text>
+      <SeletorAreas
+        valor={areas}
+        aoMudar={(novas) => {
+          setAreas(novas);
+          setSucesso(false);
+        }}
+      />
+      <SeletorStacks
+        valor={stacks}
+        aoMudar={(novas) => {
+          setStacks(novas);
+          setSucesso(false);
+        }}
+      />
       {sucesso ? (
         <View style={estilos.sucesso} accessibilityRole="alert" accessibilityLiveRegion="polite">
           <Text style={estilos.textoSucesso}>Perfil atualizado.</Text>

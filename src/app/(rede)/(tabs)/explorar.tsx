@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -17,7 +17,7 @@ import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
 import { mensagemDeErro } from '@/lib/erros';
 import { buscarPosts, type Post, type TipoPost } from '@/services/postService';
-import { buscarPessoas, type Perfil } from '@/services/profileService';
+import { buscarPessoas, buscarPorStack, type Perfil } from '@/services/profileService';
 
 type AbaExplorar = 'pessoas' | 'posts';
 
@@ -27,6 +27,24 @@ export default function Explorar() {
   const usuarioId = usuario?.id;
 
   const [aba, setAba] = useState<AbaExplorar>('pessoas');
+  // "Quem também usa React?": vem de um toque numa stack (Explorar?stack=React).
+  const { stack } = useLocalSearchParams<{ stack?: string }>();
+  const [porStack, setPorStack] = useState<{ stack: string; pessoas: Perfil[] | null } | null>(null);
+  useEffect(() => {
+    if (!stack) return;
+    let ativo = true;
+    buscarPorStack(stack)
+      .then((lista) => ativo && setPorStack({ stack, pessoas: lista }))
+      .catch(() => ativo && setPorStack({ stack, pessoas: [] }));
+    return () => {
+      ativo = false;
+    };
+  }, [stack]);
+  const filtroStack = stack ? (porStack?.stack === stack ? porStack : { stack, pessoas: null }) : null;
+  function limparStack() {
+    router.setParams({ stack: undefined });
+    setPorStack(null);
+  }
   const [termo, setTermo] = useState('');
   // Termo que gerou os resultados atuais (o campo continua editável enquanto isso).
   const [termoBuscado, setTermoBuscado] = useState<string | null>(null);
@@ -181,16 +199,42 @@ export default function Explorar() {
     return <EstadoVazio icone="file-tray-outline" titulo="Nenhum resultado" mensagem={`Nada encontrado para "${termoBuscado}". Ajuste o termo e tente de novo.`} />;
   }
 
-  if (aba === 'pessoas') {
+  // Filtro por stack ativo: mostra só "quem também usa".
+  const cabecalhoStack = filtroStack ? (
+    <View style={estilos.cabecalho}>
+      <CabecalhoTela secao="Explorar" titulo={`Quem usa ${filtroStack.stack}`} />
+      <Pressable
+        onPress={limparStack}
+        accessibilityRole="button"
+        accessibilityLabel="Voltar para a busca"
+        style={({ pressed }) => [estilos.limparFiltro, pressed && estilos.pressionado]}
+      >
+        <Ionicons name="close" size={18} color={cores.primaria} />
+        <Text style={estilos.textoLimpar}>Voltar para a busca</Text>
+      </Pressable>
+    </View>
+  ) : null;
+
+  if (aba === 'pessoas' || filtroStack) {
     return (
       <FlatList
         style={estilos.fundo}
         contentContainerStyle={estilos.conteudo}
         keyboardShouldPersistTaps="handled"
-        data={pessoas}
+        data={filtroStack ? (filtroStack.pessoas ?? []) : pessoas}
         keyExtractor={(p) => p.id}
-        ListHeaderComponent={cabecalho}
-        ListEmptyComponent={vazio()}
+        ListHeaderComponent={cabecalhoStack ?? cabecalho}
+        ListEmptyComponent={
+          filtroStack ? (
+            filtroStack.pessoas === null ? (
+              <Carregando texto="Buscando…" cartoes={2} />
+            ) : (
+              <EstadoVazio icone="code-slash-outline" titulo="Ninguém ainda" mensagem={`Nenhuma pessoa marcou ${filtroStack.stack} no perfil.`} />
+            )
+          ) : (
+            vazio()
+          )
+        }
         ItemSeparatorComponent={() => <View style={{ height: espaco.sm }} />}
         renderItem={({ item }) => (
           <Pressable
@@ -203,6 +247,13 @@ export default function Explorar() {
             <Avatar nome={item.nome} />
             <View style={estilos.textoPessoa}>
               <Text style={estilos.nomePessoa}>{item.nome}</Text>
+              {item.areas.length > 0 ? <Text style={estilos.areasPessoa}>{item.areas.join(' · ')}</Text> : null}
+              {item.stacks.length > 0 ? (
+                <Text style={estilos.bio} numberOfLines={1}>
+                  {item.stacks.slice(0, 5).join(', ')}
+                  {item.stacks.length > 5 ? ` +${item.stacks.length - 5}` : ''}
+                </Text>
+              ) : null}
               {item.bio ? (
                 <Text style={estilos.bio} numberOfLines={2}>
                   {item.bio}
@@ -271,6 +322,18 @@ const estilos = estiloTema(() => StyleSheet.create({
   },
   pressionado: { opacity: 0.8 },
   textoPessoa: { flex: 1, gap: 2 },
+  areasPessoa: { fontFamily: familia.negrito, fontSize: 12, color: cores.destaqueTexto },
+  limparFiltro: {
+    alignSelf: 'flex-start',
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: espaco.md,
+    borderRadius: 999,
+    backgroundColor: cores.primariaClara,
+  },
+  textoLimpar: { fontFamily: familia.negrito, fontSize: 14, color: cores.primaria },
   nomePessoa: { ...fonte.subtitulo, fontSize: 16, color: cores.primaria },
   bio: { ...fonte.pequena, color: cores.textoSuave },
 }));

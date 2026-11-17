@@ -126,3 +126,35 @@ do $$ begin
 end $$;
 
 create index if not exists posts_tipo_idx on public.posts (tipo, criado_em desc);
+
+-- ───────────────── 6. áreas de atuação e stacks no perfil ─────────────────
+-- areas: no que a pessoa trabalha (Front-end, Back-end...), até 3, só valores da lista.
+-- stacks: linguagens/tecnologias (Python, React...), até 15. A lista completa fica no app
+-- (src/constants/tecnologias.ts); o banco garante o tamanho de cada item e da lista.
+-- A edição continua protegida pela política editar_proprio de profiles (do PDF).
+alter table public.profiles add column if not exists areas text[] not null default '{}';
+alter table public.profiles add column if not exists stacks text[] not null default '{}';
+
+create or replace function public.itens_validos(lista text[])
+returns boolean language sql immutable
+set search_path = '' as $$
+  select coalesce(bool_and(length(trim(item)) between 1 and 40), true) from unnest(lista) as item
+$$;
+
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'profiles_areas_validas') then
+    alter table public.profiles add constraint profiles_areas_validas check (
+      cardinality(areas) <= 3
+      and areas <@ array['Front-end', 'Back-end', 'Full-stack', 'Mobile', 'Dados e IA', 'DevOps e Nuvem',
+                         'UI/UX Design', 'Jogos', 'Segurança', 'QA e Testes', 'Embarcados e IoT', 'Estudante']::text[]
+    );
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'profiles_stacks_validas') then
+    alter table public.profiles add constraint profiles_stacks_validas check (
+      cardinality(stacks) <= 15 and public.itens_validos(stacks)
+    );
+  end if;
+end $$;
+
+-- Índice para "quem também usa React?" (stacks @> array['React']).
+create index if not exists profiles_stacks_idx on public.profiles using gin (stacks);

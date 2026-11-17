@@ -196,7 +196,7 @@ Toda chamada ao Supabase passa por `services/`; todo acesso ao SQLite passa por 
 ```bash
 npx tsc --noEmit      # tipos
 npx expo lint         # padrão de código
-npm test              # testes automáticos das regras (validação, datas, erros)
+npm test              # testes automáticos das regras (validação, datas, erros, código, stacks)
 npm run teste:autorizacao   # Teste 4, contra o Supabase
 ```
 
@@ -214,6 +214,7 @@ inferior, 2 abas internas por destino, o menu lateral só com Comunidade, Notifi
 | **Código nos posts** | Texto entre ``` (três crases) aparece como bloco de código, com fonte de programação e fundo escuro. `` ```tsx `` mostra a linguagem. | `src/lib/codigo.ts` (com testes) |
 | **Editar e excluir** | Menu **⋯** no próprio post ou comentário, com confirmação antes de excluir. Itens editados mostram "· editado". Excluir um post apaga curtidas, comentários e avisos dele. | Políticas RLS `editar_proprio` / `excluir_proprio` + `grant` só das colunas permitidas |
 | **Destaques da semana** | Os posts mais curtidos dos últimos 7 dias, no Explorar → Posts e na coluna da direita (computador). | View `destaques_semana` com `security_invoker` (respeita o RLS) |
+| **Áreas e stacks no perfil** | Em Editar perfil a pessoa escolhe **no que trabalha** (Front-end, Back-end, Full-stack, Mobile, Dados e IA, DevOps, UI/UX, Jogos, Segurança, QA, Embarcados, Estudante — até 3) e **suas stacks** entre ~140 linguagens e tecnologias em 8 grupos, com busca (até 15). Aparecem no cartão do perfil, na aba Sobre e no Explorar. Tocar numa stack mostra **"Quem usa React"**. | Colunas `profiles.areas` e `profiles.stacks` com `check` (áreas só da lista, limites de tamanho); edição protegida pela mesma política do PDF (`id = auth.uid()`). Lista em `src/constants/tecnologias.ts` (com testes) |
 | **Tempo real** | No Início aparece **"2 novas publicações · toque para ver"** quando alguém publica, e o sino de avisos atualiza na hora. | Supabase Realtime (também respeita o RLS: cada pessoa só recebe o que já poderia ler) |
 
 ### Detalhes que deixam o app mais redondo

@@ -25,3 +25,20 @@ export function validarConfirmacao(senha: string, confirmacao: string): string |
   if (confirmacao.length === 0) return 'Repita a senha.';
   return senha !== confirmacao ? 'As senhas não são iguais.' : null;
 }
+
+/** Áreas de atuação: no máximo `maximo` (o banco confere de novo). */
+export function validarAreas(areas: string[], maximo = 3): string | null {
+  return areas.length > maximo ? `Escolha no máximo ${maximo} áreas.` : null;
+}
+
+/** Stacks: sem repetidas e no máximo `maximo` (o banco confere de novo). */
+export function validarStacks(stacks: string[], maximo = 15): string | null {
+  if (new Set(stacks).size !== stacks.length) return 'Há stacks repetidas.';
+  return stacks.length > maximo ? `Escolha no máximo ${maximo} stacks.` : null;
+}
+
+/** Liga/desliga um item numa lista de escolhas, respeitando o limite. */
+export function alternarItem(lista: string[], item: string, maximo: number): string[] {
+  if (lista.includes(item)) return lista.filter((x) => x !== item);
+  return lista.length >= maximo ? lista : [...lista, item];
+}

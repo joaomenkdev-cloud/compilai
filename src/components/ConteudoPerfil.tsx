@@ -6,6 +6,7 @@ import { AbasInternas } from '@/components/AbasInternas';
 import { Avatar } from '@/components/Avatar';
 import { Botao } from '@/components/Botao';
 import { CabecalhoTela } from '@/components/CabecalhoTela';
+import { ChipsStack } from '@/components/ChipsStack';
 import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
@@ -103,6 +104,11 @@ export function ConteudoPerfil({ pessoaId, ehProprio }: Props) {
           <Text style={estilos.nome} accessibilityRole="header">
             {perfil.nome}
           </Text>
+          {perfil.areas.length > 0 ? (
+            <Text style={estilos.areas} accessibilityLabel={`Trabalha com: ${perfil.areas.join(', ')}`}>
+              {perfil.areas.join(' · ')}
+            </Text>
+          ) : null}
           {perfil.bio ? (
             <Text style={estilos.bio} numberOfLines={2}>
               {perfil.bio}
@@ -112,6 +118,7 @@ export function ConteudoPerfil({ pessoaId, ehProprio }: Props) {
             <Text style={estilos.chipNumero}>{posts.length}</Text>
             <Text style={estilos.chipTexto}>{posts.length === 1 ? 'publicação' : 'publicações'}</Text>
           </View>
+          <ChipsStack stacks={perfil.stacks} limite={8} />
         </View>
         {ehProprio ? (
           <View style={estilos.acoes}>
@@ -144,6 +151,18 @@ export function ConteudoPerfil({ pessoaId, ehProprio }: Props) {
       <Text style={[estilos.valor, !perfil.bio && estilos.vazio]}>
         {perfil.bio || (ehProprio ? 'Você ainda não escreveu sua biografia.' : 'Sem biografia ainda.')}
       </Text>
+      <Text style={estilos.rotulo}>Trabalha com</Text>
+      <Text style={[estilos.valor, perfil.areas.length === 0 && estilos.vazio]}>
+        {perfil.areas.length > 0 ? perfil.areas.join(' · ') : ehProprio ? 'Escolha suas áreas em Editar perfil.' : 'Não informado.'}
+      </Text>
+      <Text style={estilos.rotulo}>Stacks</Text>
+      {perfil.stacks.length > 0 ? (
+        <ChipsStack stacks={perfil.stacks} />
+      ) : (
+        <Text style={[estilos.valor, estilos.vazio]}>
+          {ehProprio ? 'Escolha suas stacks em Editar perfil.' : 'Não informado.'}
+        </Text>
+      )}
     </View>
   );
 
@@ -206,6 +225,7 @@ const estilos = estiloTema(() => StyleSheet.create({
   },
   identidade: { paddingHorizontal: espaco.lg, paddingTop: espaco.sm, gap: espaco.sm },
   nome: { ...fonte.titulo, fontSize: 24, lineHeight: 30, color: cores.texto },
+  areas: { fontFamily: familia.negrito, fontSize: 14, color: cores.destaqueTexto },
   bio: { ...fonte.corpo, color: cores.textoSuave },
   chip: {
     alignSelf: 'flex-start',

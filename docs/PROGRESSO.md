@@ -25,3 +25,4 @@
 - [x] Tela de erro e página não encontrada
 - [x] Testes automáticos (`npm test`, 8 testes)
 - [x] Tipo da publicação, dúvida resolvida, código nos posts, editar/excluir, destaques e tempo real (`supabase/extensoes.sql`, testado no banco e na tela)
+- [x] Áreas de atuação e stacks no perfil, com "Quem usa <stack>" no Explorar (testado no banco e na tela)

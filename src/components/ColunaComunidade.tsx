@@ -79,9 +79,9 @@ export function ColunaComunidade() {
                 <Text style={estilos.nome} numberOfLines={1}>
                   {p.nome}
                 </Text>
-                {p.bio ? (
+                {p.areas.length > 0 || p.bio ? (
                   <Text style={estilos.bio} numberOfLines={1}>
-                    {p.bio}
+                    {p.areas.length > 0 ? p.areas.join(' · ') : p.bio}
                   </Text>
                 ) : null}
               </View>
