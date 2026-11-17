@@ -1,15 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/Avatar';
 import { BotaoCurtir } from '@/components/BotaoCurtir';
 import { EtiquetaTipo } from '@/components/EtiquetaTipo';
 import { MenuDono } from '@/components/MenuDono';
+import { QuemCurtiu } from '@/components/QuemCurtiu';
 import { TextoComCodigo } from '@/components/TextoComCodigo';
 import { areaToque, cores, espaco, familia, fonte, pressionado, raio, sombra, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
+import { compartilharPost } from '@/lib/compartilhar';
 import { tempoRelativo } from '@/lib/datas';
 import { editarPost, excluirPost, TEXTO_MAXIMO, type Post } from '@/services/postService';
 
@@ -43,6 +45,21 @@ export const PostCard = memo(function PostCard({
   const abrirPost = () => router.push({ pathname: '/post/[id]', params: { id: post.id } });
   const abrirAutor = () => router.push({ pathname: '/pessoa/[id]', params: { id: post.autor_id } });
   const comentarios = post.comentarios === 1 ? '1 comentário' : `${post.comentarios} comentários`;
+
+  // Compartilhar: menu do sistema; na web sem esse menu, copia o link e avisa por 2 s.
+  const [copiado, setCopiado] = useState(false);
+  useEffect(() => {
+    if (!copiado) return;
+    const t = setTimeout(() => setCopiado(false), 2000);
+    return () => clearTimeout(t);
+  }, [copiado]);
+  async function compartilhar() {
+    try {
+      if ((await compartilharPost(post.id, post.autor_nome, post.texto)) === 'copiado') setCopiado(true);
+    } catch {
+      // cancelado pela pessoa: nada a fazer
+    }
+  }
 
   return (
     <View style={[estilos.card, sombra.card]}>
@@ -118,6 +135,20 @@ export const PostCard = memo(function PostCard({
           <Ionicons name="chatbubble-outline" size={19} color={cores.textoSuave} />
           <Text style={estilos.textoComentarios}>{post.comentarios}</Text>
         </Pressable>
+        {noDetalhe ? <QuemCurtiu postId={post.id} curtidas={post.curtidas} /> : null}
+        <Pressable
+          onPress={compartilhar}
+          accessibilityRole="button"
+          accessibilityLabel={copiado ? 'Link copiado' : 'Compartilhar publicação'}
+          style={({ pressed }) => [estilos.comentarios, estilos.compartilhar, pressed && pressionado]}
+        >
+          <Ionicons name={copiado ? 'checkmark' : 'share-social-outline'} size={19} color={copiado ? cores.sucesso : cores.textoSuave} />
+          {copiado ? (
+            <Text style={[estilos.textoComentarios, { color: cores.sucesso }]} accessibilityLiveRegion="polite">
+              Link copiado
+            </Text>
+          ) : null}
+        </Pressable>
       </View>
     </View>
   );
@@ -154,5 +185,6 @@ const estilos = estiloTema(() => StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
+  compartilhar: { marginLeft: 'auto' },
   textoComentarios: { fontFamily: familia.medio, fontSize: 14, color: cores.texto },
 }));

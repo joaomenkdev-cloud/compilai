@@ -26,3 +26,22 @@ export async function alternarCurtida(
   if (error) throw error;
   return { curtido: !curtidoAgora, curtidas: count ?? 0 };
 }
+
+export type Curtida = { autor_id: string; nome: string; criado_em: string };
+
+/** "Quem curtiu": pessoas que curtiram o post, da curtida mais recente para a mais antiga. */
+export async function listarCurtidas(postId: string): Promise<Curtida[]> {
+  const { data, error } = await supabase
+    .from('likes')
+    .select('autor_id, criado_em, profiles(nome)')
+    .eq('post_id', postId)
+    .order('criado_em', { ascending: false })
+    .limit(100);
+  if (error) throw error;
+  type Linha = { autor_id: string; criado_em: string; profiles: { nome: string } | null };
+  return ((data ?? []) as unknown as Linha[]).map((l) => ({
+    autor_id: l.autor_id,
+    criado_em: l.criado_em,
+    nome: l.profiles?.nome ?? 'Pessoa',
+  }));
+}

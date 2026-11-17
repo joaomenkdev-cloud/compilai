@@ -78,16 +78,18 @@ function paraPost(l: LinhaPost, curtidos: Set<string>): Post {
  * - autorId: só os posts dessa pessoa (aba Minhas, perfis)
  * - termo: busca por texto (Explorar → Posts)
  * - tipo: só projetos, dúvidas ou conquistas (filtro do Explorar → Posts)
+ * - antesDe: só posts mais antigos que esta data (próxima página da rolagem infinita)
  * Lança o erro do Supabase em caso de falha (inclusive sem rede).
  */
 export async function buscarPosts(
   usuarioId: string,
-  filtro: { autorId?: string; termo?: string; tipo?: TipoPost } = {},
+  filtro: { autorId?: string; termo?: string; tipo?: TipoPost; antesDe?: string } = {},
 ): Promise<Post[]> {
   let consulta = supabase.from('posts').select(CAMPOS).order('criado_em', { ascending: false }).limit(LIMITE_FEED);
   if (filtro.autorId) consulta = consulta.eq('autor_id', filtro.autorId);
   if (filtro.termo) consulta = consulta.ilike('texto', `%${escaparBusca(filtro.termo)}%`);
   if (filtro.tipo) consulta = consulta.eq('tipo', filtro.tipo);
+  if (filtro.antesDe) consulta = consulta.lt('criado_em', filtro.antesDe);
 
   const { data, error } = await consulta;
   if (error) throw error;

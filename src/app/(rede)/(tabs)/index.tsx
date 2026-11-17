@@ -1,6 +1,6 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import { AbasInternas } from '@/components/AbasInternas';
 import { BannerOffline } from '@/components/BannerOffline';
@@ -12,13 +12,13 @@ import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
 import { PostCard } from '@/components/PostCard';
-import { cores, espaco, larguraLeitura, estiloTema } from '@/constants/tema';
+import { cores, espaco, fonte, larguraLeitura, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
 import { useNovasPublicacoes } from '@/hooks/useNovasPublicacoes';
 import { useLayout } from '@/hooks/useLayout';
 import { ehErroDeRede, mensagemDeErro } from '@/lib/erros';
-import { buscarFeed, buscarPosts, type Post } from '@/services/postService';
+import { buscarFeed, buscarPosts, LIMITE_FEED, type Post } from '@/services/postService';
 import { lerFeed } from '@/storage/feedCache';
 
 type AbaInicio = 'recentes' | 'minhas';
@@ -37,6 +37,10 @@ export default function Inicio() {
   const [erro, setErro] = useState<string | null>(null);
   /** Preenchido quando a lista veio do cache por falta de rede: data da última atualização. */
   const [offline, setOffline] = useState<{ atualizado: string | null } | null>(null);
+  // Rolagem infinita: a primeira página vem do carregar(); as próximas, do carregarMais().
+  const [temMais, setTemMais] = useState(false);
+  const [carregandoMais, setCarregandoMais] = useState(false);
+  const [erroMais, setErroMais] = useState(false);
 
   // Cada busca ganha um número; só a mais recente pode mexer na tela.
   const ultimaBusca = useRef(0);
@@ -66,12 +70,14 @@ export default function Inicio() {
         if (!atual()) return;
         setPosts(r.posts);
         setOffline(r.offline ? { atualizado: r.atualizado } : null);
+        setTemMais(!r.offline && r.posts.length >= LIMITE_FEED);
       } else {
         try {
           const meus = await buscarPosts(usuarioId, { autorId: usuarioId });
           if (!atual()) return;
           setPosts(meus);
           setOffline(null);
+          setTemMais(meus.length >= LIMITE_FEED);
         } catch (e) {
           // Sem rede na aba Minhas: usa os meus posts que estão no feed salvo.
           if (!ehErroDeRede(e)) throw e;
@@ -80,9 +86,11 @@ export default function Inicio() {
           if (!atual()) return;
           setPosts(salvo.posts.filter((p) => p.autor_id === usuarioId));
           setOffline({ atualizado: salvo.atualizado });
+          setTemMais(false);
         }
       }
       setErro(null);
+      setErroMais(false);
     } catch (e) {
       if (!atual()) return;
       setErro(ehErroDeRede(e) ? PRIMEIRO_CARREGAMENTO : mensagemDeErro(e));
@@ -93,6 +101,28 @@ export default function Inicio() {
       }
     }
   }, [usuarioId, aba]);
+
+  // Próxima página: posts mais antigos que o último da lista.
+  const carregarMais = useCallback(async () => {
+    if (!usuarioId || !temMais || carregandoMais || offline || posts.length === 0) return;
+    const numero = ultimaBusca.current; // se o feed recarregar no meio, descarta esta página
+    setCarregandoMais(true);
+    try {
+      const antesDe = posts[posts.length - 1].criado_em;
+      const pagina = await buscarPosts(usuarioId, { antesDe, autorId: aba === 'minhas' ? usuarioId : undefined });
+      if (numero !== ultimaBusca.current) return;
+      setPosts((lista) => {
+        const ja = new Set(lista.map((p) => p.id));
+        return [...lista, ...pagina.filter((p) => !ja.has(p.id))];
+      });
+      setTemMais(pagina.length >= LIMITE_FEED);
+      setErroMais(false);
+    } catch {
+      if (numero === ultimaBusca.current) setErroMais(true);
+    } finally {
+      setCarregandoMais(false);
+    }
+  }, [usuarioId, temMais, carregandoMais, offline, posts, aba]);
 
   // Recarrega sempre que a tela ganha foco (ex.: voltando de Publicar) ou a aba muda.
   useFocusEffect(
@@ -107,6 +137,8 @@ export default function Inicio() {
     setPosts([]);
     setErro(null);
     setOffline(null);
+    setTemMais(false);
+    setErroMais(false);
     setCarregando(true);
     setAba(nova);
   }
@@ -143,6 +175,33 @@ export default function Inicio() {
     );
   }
 
+  function rodape() {
+    if (posts.length === 0) return null;
+    if (carregandoMais) {
+      return (
+        <View style={estilos.rodape} accessibilityLiveRegion="polite">
+          <ActivityIndicator color={cores.primaria} />
+          <Text style={estilos.textoRodape}>Carregando mais…</Text>
+        </View>
+      );
+    }
+    if (erroMais) {
+      return (
+        <View style={estilos.rodape}>
+          <EstadoErro mensagem="Não deu para carregar mais publicações." aoTentarDeNovo={carregarMais} />
+        </View>
+      );
+    }
+    if (!temMais && !offline && posts.length >= LIMITE_FEED) {
+      return (
+        <View style={estilos.rodape}>
+          <Text style={estilos.textoRodape}>Você chegou ao começo da comunidade 🎉</Text>
+        </View>
+      );
+    }
+    return null;
+  }
+
   const feed = (
     <FlatList
       ref={lista}
@@ -171,6 +230,9 @@ export default function Inicio() {
         </View>
       }
       ListEmptyComponent={conteudoVazio()}
+      ListFooterComponent={rodape() ?? undefined}
+      onEndReached={carregarMais}
+      onEndReachedThreshold={0.5}
       refreshControl={
         <RefreshControl refreshing={atualizando} onRefresh={puxarParaAtualizar} colors={[cores.primaria]} tintColor={cores.primaria} />
       }
@@ -194,4 +256,6 @@ const estilos = estiloTema(() => StyleSheet.create({
   colunas: { flex: 1, flexDirection: 'row', backgroundColor: cores.fundo },
   conteudo: { ...larguraLeitura, padding: espaco.lg, paddingBottom: espaco.xxl },
   cabecalho: { gap: espaco.lg, marginBottom: espaco.lg },
+  rodape: { alignItems: 'center', gap: espaco.sm, paddingTop: espaco.lg },
+  textoRodape: { ...fonte.pequena, color: cores.textoSuave, textAlign: 'center' },
 }));
