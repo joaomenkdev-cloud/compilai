@@ -7,7 +7,7 @@ import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { CampoTexto } from '@/components/CampoTexto';
 import { EstadoErro } from '@/components/EstadoErro';
 import { Tela } from '@/components/Tela';
-import { cores, espaco, fonte, raio, familia } from '@/constants/tema';
+import { cores, espaco, fonte, raio, familia, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { mensagemDeErro } from '@/lib/erros';
 import { atualizarPerfil, BIO_MAXIMA, NOME_MAXIMO } from '@/services/profileService';
@@ -110,7 +110,7 @@ export default function EditarPerfil() {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   campoBio: { minHeight: 120, paddingTop: espaco.md },
   contador: { ...fonte.pequena, color: cores.textoSuave, textAlign: 'right', marginTop: -espaco.sm },
   sucesso: {
@@ -118,7 +118,7 @@ const estilos = StyleSheet.create({
     borderColor: cores.sucesso,
     borderRadius: raio.campo,
     padding: espaco.md,
-    backgroundColor: '#E8F5EE',
+    backgroundColor: cores.sucessoClaro,
   },
   textoSucesso: { ...fonte.corpo, fontFamily: familia.negrito, color: cores.sucesso },
-});
+}));

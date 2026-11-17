@@ -10,7 +10,7 @@ import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
 import { PostCard } from '@/components/PostCard';
-import { cores, espaco, fonte, raio, sombra, larguraLeitura } from '@/constants/tema';
+import { cores, espaco, fonte, raio, sombra, larguraLeitura, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
 import { tempoRelativo } from '@/lib/datas';
@@ -188,7 +188,7 @@ function DetalhePost({ postId }: { postId: string }) {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   fundo: { flex: 1, backgroundColor: cores.fundo },
   conteudo: { ...larguraLeitura, padding: espaco.lg, paddingBottom: espaco.xxl },
   cabecalho: { gap: espaco.lg, marginBottom: espaco.md },
@@ -209,4 +209,4 @@ const estilos = StyleSheet.create({
   formulario: { marginTop: espaco.xl, gap: espaco.sm },
   campo: { minHeight: 90, paddingTop: espaco.md },
   contador: { ...fonte.pequena, color: cores.textoSuave, textAlign: 'right' },
-});
+}));

@@ -45,7 +45,7 @@ export default function LayoutRede() {
             headerRight: () => <BotaoAvisos />,
             drawerStyle: { backgroundColor: cores.fundo, width: 290 },
             // Fundo escurecido atrás do menu aberto, para o menu se destacar.
-            overlayColor: 'rgba(10, 53, 64, 0.5)',
+            overlayColor: cores.sobreposicao,
           })}
         >
           <Drawer.Screen name="(tabs)" />

@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { areaToque, cores, espaco, familia, pressionado } from '@/constants/tema';
+import { areaToque, cores, espaco, familia, pressionado, estiloTema } from '@/constants/tema';
 
 type Props = {
   curtido: boolean;
@@ -41,7 +41,7 @@ export function BotaoCurtir({ curtido, curtidas, ocupado, aoPressionar }: Props)
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   botao: {
     minHeight: areaToque,
     minWidth: areaToque,
@@ -56,4 +56,4 @@ const estilos = StyleSheet.create({
   ocupado: { opacity: 0.5 },
   texto: { fontFamily: familia.medio, fontSize: 14, color: cores.texto },
   textoAtivo: { fontFamily: familia.negrito, color: cores.destaqueTexto },
-});
+}));

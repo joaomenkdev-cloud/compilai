@@ -7,7 +7,7 @@ import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { CampoTexto } from '@/components/CampoTexto';
 import { EstadoErro } from '@/components/EstadoErro';
 import { TelaEntrada } from '@/components/TelaEntrada';
-import { areaToque, cores, espaco, familia, fonte, raio } from '@/constants/tema';
+import { areaToque, cores, espaco, familia, fonte, raio, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { validarConfirmacao, validarEmail, validarNome, validarSenha } from '@/lib/validacao';
 
@@ -116,7 +116,7 @@ export default function Cadastro() {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   aviso: {
     borderLeftWidth: 4,
     borderLeftColor: cores.primaria,
@@ -135,4 +135,4 @@ const estilos = StyleSheet.create({
     minHeight: areaToque,
     textDecorationLine: 'underline',
   },
-});
+}));

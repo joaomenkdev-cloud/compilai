@@ -2,7 +2,18 @@
 // Assim, mudar a identidade visual é mexer em um único arquivo.
 import { Platform } from 'react-native';
 
-export const cores = {
+export type Paleta = {
+  fundo: string; superficie: string; superficieSuave: string;
+  primaria: string; primariaEscura: string; primariaClara: string; sobrePrimaria: string;
+  destaque: string; destaqueTexto: string; destaqueClaro: string;
+  texto: string; textoSuave: string; borda: string; pilula: string;
+  erro: string; erroClaro: string; sucesso: string; sucessoClaro: string;
+  sobreposicao: string;
+  marca: string; // fundo fixo da identidade (topo das entradas, splash), igual nos dois modos
+  fundoAviso: string; // faixa de aviso offline (texto branco por cima)
+};
+
+export const paletaClara: Paleta = {
   fundo: '#FAF6EE', // creme claro
   superficie: '#FFFFFF', // cards e campos
   superficieSuave: '#F3EDE1', // fundos secundários (trilho das abas, chips)
@@ -21,7 +32,64 @@ export const cores = {
   erroClaro: '#FDECEA',
   sucesso: '#1E7B4A',
   sucessoClaro: '#E8F5EE',
-} as const;
+  sobreposicao: 'rgba(10, 53, 64, 0.5)', // fundo escurecido atrás do menu aberto
+  marca: '#0F4C5C',
+  fundoAviso: '#1B2A30',
+};
+
+export const paletaEscura: Paleta = {
+  fundo: '#10181B',
+  superficie: '#182226',
+  superficieSuave: '#1F2C31',
+  primaria: '#5FB8CB', // azul-petróleo mais claro, para ter contraste no escuro
+  primariaEscura: '#0A3540', // topo das telas de entrada (já é escuro nos dois modos)
+  primariaClara: '#1E3B44',
+  sobrePrimaria: '#06232B',
+  destaque: '#F2802F',
+  destaqueTexto: '#F5A26B',
+  destaqueClaro: '#3A2619',
+  texto: '#EAF0F2',
+  textoSuave: '#9CB0B7',
+  borda: '#2C3A40',
+  pilula: '#27363B',
+  erro: '#F2837B',
+  erroClaro: '#3D1F1D',
+  sucesso: '#5CC389',
+  sucessoClaro: '#17301F',
+  sobreposicao: 'rgba(0, 0, 0, 0.6)',
+  marca: '#0F4C5C',
+  fundoAviso: '#2A3A41',
+};
+
+export type Esquema = 'claro' | 'escuro';
+
+// `cores` é um objeto único que muda de valores quando o esquema muda (aplicarEsquema).
+// O TemaProvider remonta a árvore ao trocar, então toda tela relê as cores novas.
+export const cores: Paleta = { ...paletaClara };
+let esquemaAtual: Esquema = 'claro';
+let versao = 0;
+
+export function aplicarEsquema(esquema: Esquema) {
+  if (esquema === esquemaAtual) return;
+  esquemaAtual = esquema;
+  versao += 1;
+  Object.assign(cores, esquema === 'escuro' ? paletaEscura : paletaClara);
+}
+
+// Estilos que dependem de `cores`: criados sob demanda e refeitos quando o esquema muda.
+// Uso: const estilos = estiloTema(() => StyleSheet.create({ ... })); (igual a antes nos componentes)
+export function estiloTema<T extends object>(criar: () => T): T {
+  let cache: T | null = null;
+  let deVersao = -1;
+  const atual = () => {
+    if (!cache || deVersao !== versao) {
+      cache = criar();
+      deVersao = versao;
+    }
+    return cache;
+  };
+  return new Proxy({} as T, { get: (_, chave) => (atual() as Record<string | symbol, unknown>)[chave] });
+}
 
 // Fontes carregadas no layout raiz (src/app/_layout.tsx).
 // Space Grotesk: títulos (cara de tecnologia). DM Sans: texto (muito legível).

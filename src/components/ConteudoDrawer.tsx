@@ -6,9 +6,10 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
-import { areaToque, cores, espaco, familia, fonte, raio } from '@/constants/tema';
+import { areaToque, cores, espaco, familia, fonte, raio, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useAvisos } from '@/contexts/AvisosProvider';
+import { useTema, type Preferencia } from '@/contexts/TemaProvider';
 
 type Rota = '/' | '/notificacoes' | '/sobre';
 type Item = {
@@ -20,6 +21,12 @@ type Item = {
   contador?: number;
 };
 
+const OPCOES_TEMA: { valor: Preferencia; rotulo: string; icone: keyof typeof Ionicons.glyphMap }[] = [
+  { valor: 'sistema', rotulo: 'Auto', icone: 'phone-portrait-outline' },
+  { valor: 'claro', rotulo: 'Claro', icone: 'sunny-outline' },
+  { valor: 'escuro', rotulo: 'Escuro', icone: 'moon-outline' },
+];
+
 // Conteúdo próprio do menu lateral: só Comunidade, Notificações, Sobre e Sair.
 // (As rotas de detalhe existem no Drawer, mas não aparecem aqui.)
 export function ConteudoDrawer({ navigation }: DrawerContentComponentProps) {
@@ -27,6 +34,7 @@ export function ConteudoDrawer({ navigation }: DrawerContentComponentProps) {
   const caminho = usePathname();
   const { sair, perfil } = useAuth();
   const { naoLidos, recarregar } = useAvisos();
+  const { preferencia, definir } = useTema();
   const insets = useSafeAreaInsets();
   const status = useDrawerStatus();
 
@@ -121,6 +129,29 @@ export function ConteudoDrawer({ navigation }: DrawerContentComponentProps) {
         })}
       </View>
 
+      {/* Aparência: seguir o aparelho, claro ou escuro (a escolha fica salva). */}
+      <View style={estilos.aparencia} accessibilityRole="radiogroup" accessibilityLabel="Aparência do app">
+        <Text style={estilos.tituloAparencia}>Aparência</Text>
+        <View style={estilos.trilho}>
+          {OPCOES_TEMA.map((o) => {
+            const sel = preferencia === o.valor;
+            return (
+              <Pressable
+                key={o.valor}
+                onPress={() => definir(o.valor)}
+                accessibilityRole="radio"
+                accessibilityLabel={o.rotulo}
+                accessibilityState={{ selected: sel }}
+                style={[estilos.opcao, sel && estilos.opcaoAtiva]}
+              >
+                <Ionicons name={o.icone} size={18} color={sel ? cores.primaria : cores.textoSuave} />
+                <Text style={[estilos.textoOpcao, sel && estilos.textoOpcaoAtiva]}>{o.rotulo}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
       {/* Sair fica separado e em vermelho: é uma ação de saída, não um destino. */}
       <View style={estilos.rodape}>
         <Pressable
@@ -137,7 +168,7 @@ export function ConteudoDrawer({ navigation }: DrawerContentComponentProps) {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   caixa: { flex: 1, backgroundColor: cores.fundo, paddingHorizontal: espaco.lg },
   marca: { flexDirection: 'row', alignItems: 'center', gap: espaco.sm },
   logo: { width: 32, height: 32 },
@@ -176,5 +207,20 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
   },
   textoBolinha: { color: cores.sobrePrimaria, fontFamily: familia.negrito, fontSize: 13 },
+  aparencia: { paddingBottom: espaco.md, gap: espaco.sm },
+  tituloAparencia: { ...fonte.pequena, fontFamily: familia.medio, color: cores.textoSuave },
+  trilho: { flexDirection: 'row', backgroundColor: cores.superficieSuave, borderRadius: raio.pilula, padding: 4 },
+  opcao: {
+    flex: 1,
+    minHeight: areaToque - 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    borderRadius: raio.pilula,
+  },
+  opcaoAtiva: { backgroundColor: cores.superficie },
+  textoOpcao: { fontFamily: familia.medio, fontSize: 13, color: cores.textoSuave },
+  textoOpcaoAtiva: { color: cores.primaria, fontFamily: familia.negrito },
   rodape: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: cores.borda, paddingTop: espaco.md },
-});
+}));

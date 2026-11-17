@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { cores, espaco, fonte } from '@/constants/tema';
+import { cores, espaco, fonte, estiloTema } from '@/constants/tema';
 
 type Props = {
   /** Seção da tela, ex.: "INÍCIO". Aparece como "COMPILAAÍ / INÍCIO". */
@@ -26,11 +26,11 @@ export function CabecalhoTela({ secao, titulo, subtitulo }: Props) {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   caixa: { gap: espaco.xs },
   linhaSobrancelha: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   ponto: { width: 8, height: 8, borderRadius: 2, backgroundColor: cores.destaque },
   sobrancelha: { ...fonte.sobrancelha, color: cores.destaqueTexto },
   titulo: { ...fonte.titulo, color: cores.primaria },
   subtitulo: { ...fonte.corpo, color: cores.textoSuave },
-});
+}));

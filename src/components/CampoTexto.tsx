@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
 
-import { cores, espaco, familia, fonte, raio } from '@/constants/tema';
+import { cores, espaco, familia, fonte, raio, estiloTema } from '@/constants/tema';
 
 type Props = TextInputProps & {
   /** Rótulo sempre visível (não só placeholder). */
@@ -59,7 +59,7 @@ export function CampoTexto({ rotulo, erro, style, secureTextEntry, onFocus, onBl
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   caixa: { gap: 6 },
   rotulo: { ...fonte.rotulo, color: cores.texto },
   moldura: {
@@ -83,4 +83,4 @@ const estilos = StyleSheet.create({
   olho: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   linhaErro: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   erro: { ...fonte.pequena, fontFamily: familia.medio, color: cores.erro, flex: 1 },
-});
+}));

@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { areaToque, cores, espaco, familia } from '@/constants/tema';
+import { areaToque, cores, espaco, familia, estiloTema } from '@/constants/tema';
 import { useAvisos } from '@/contexts/AvisosProvider';
 
 // Sino no canto do cabeçalho: atalho para Notificações com o total de não lidas.
@@ -30,7 +30,7 @@ export function BotaoAvisos() {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   botao: {
     width: areaToque,
     height: areaToque,
@@ -53,4 +53,4 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
   },
   numero: { color: cores.sobrePrimaria, fontFamily: familia.negrito, fontSize: 10, lineHeight: 12 },
-});
+}));

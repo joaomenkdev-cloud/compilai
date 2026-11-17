@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { familia } from '@/constants/tema';
+import { familia, estiloTema } from '@/constants/tema';
 
 /** "Bia Souza" → "BS"; "caio" → "C" */
 export function iniciais(nome: string): string {
@@ -38,7 +38,7 @@ export function Avatar({ nome, tamanho = 44 }: { nome: string; tamanho?: number 
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   circulo: { alignItems: 'center', justifyContent: 'center' },
   texto: { color: '#FFFFFF', fontFamily: familia.titulo },
-});
+}));

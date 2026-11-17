@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { areaToque, cores, espaco, fonte, pressionado, raio, sombra } from '@/constants/tema';
+import { areaToque, cores, espaco, fonte, pressionado, raio, sombra, estiloTema } from '@/constants/tema';
 
 type Props = {
   titulo: string;
@@ -58,7 +58,7 @@ export function Botao({
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   base: {
     minHeight: areaToque + 8,
     paddingHorizontal: espaco.xl,
@@ -72,4 +72,4 @@ const estilos = StyleSheet.create({
   perigo: { backgroundColor: cores.superficie, borderWidth: 1.5, borderColor: cores.erro },
   inativo: { opacity: 0.45 },
   texto: { ...fonte.botao },
-});
+}));

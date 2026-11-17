@@ -1,6 +1,6 @@
 import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 
-import { cores, espaco } from '@/constants/tema';
+import { cores, espaco, estiloTema } from '@/constants/tema';
 
 // Tela de marca em React, exibida enquanto lemos a sessão salva.
 // Mesmo fundo e mesma imagem da splash nativa (app.json), para a troca ser suave.
@@ -21,9 +21,9 @@ export function TelaMarca({ aoMontar }: { aoMontar?: () => void }) {
   );
 }
 
-const estilos = StyleSheet.create({
-  fundo: { flex: 1, backgroundColor: cores.primaria, alignItems: 'center', justifyContent: 'center', gap: espaco.sm },
+const estilos = estiloTema(() => StyleSheet.create({
+  fundo: { flex: 1, backgroundColor: cores.marca, alignItems: 'center', justifyContent: 'center', gap: espaco.sm },
   marca: { width: 120, height: 120, marginBottom: espaco.md },
-  nome: { fontSize: 40, fontWeight: '800', color: cores.sobrePrimaria },
+  nome: { fontSize: 40, fontWeight: '800', color: '#FFFFFF' },
   legenda: { fontSize: 15, color: cores.fundo },
-});
+}));

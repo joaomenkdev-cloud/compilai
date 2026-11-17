@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { cores, espaco, familia, fonte, raio } from '@/constants/tema';
+import { cores, espaco, familia, fonte, raio, estiloTema } from '@/constants/tema';
 import { dataCurta, horaCurta } from '@/lib/datas';
 
 // Aviso de que a lista na tela é a cópia salva no aparelho (sem internet).
@@ -16,7 +16,7 @@ export function BannerOffline({ atualizado }: { atualizado: string | null }) {
   return (
     <View style={estilos.caixa} accessibilityRole="alert" accessibilityLiveRegion="polite">
       <View style={estilos.icone}>
-        <Ionicons name="cloud-offline-outline" size={20} color={cores.sobrePrimaria} />
+        <Ionicons name="cloud-offline-outline" size={20} color="#FFFFFF" />
       </View>
       <View style={{ flex: 1 }}>
         <Text style={estilos.titulo}>{`Sem conexão${quando}`}</Text>
@@ -26,12 +26,12 @@ export function BannerOffline({ atualizado }: { atualizado: string | null }) {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   caixa: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: espaco.md,
-    backgroundColor: cores.texto,
+    backgroundColor: cores.fundoAviso,
     borderRadius: raio.campo,
     padding: espaco.md,
   },
@@ -43,6 +43,6 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  titulo: { fontFamily: familia.negrito, fontSize: 14, color: cores.sobrePrimaria },
+  titulo: { fontFamily: familia.negrito, fontSize: 14, color: '#FFFFFF' },
   texto: { ...fonte.pequena, color: '#D5DEE1' },
-});
+}));

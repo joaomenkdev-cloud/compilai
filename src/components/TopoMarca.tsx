@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { cores, espaco, familia, fonte } from '@/constants/tema';
+import { cores, espaco, familia, fonte, estiloTema } from '@/constants/tema';
 
 // Topo das telas de entrada (Entrar / Criar conta): faixa azul com a marca,
 // cantos inferiores arredondados para o formulário "subir" sobre ela.
@@ -23,9 +23,9 @@ export function TopoMarca({ frase }: { frase: string }) {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   faixa: {
-    backgroundColor: cores.primaria,
+    backgroundColor: cores.marca,
     paddingHorizontal: espaco.xl,
     paddingBottom: espaco.xxl + espaco.lg,
     borderBottomLeftRadius: 32,
@@ -38,6 +38,6 @@ const estilos = StyleSheet.create({
   bolhaPequena: { width: 120, height: 120, right: 90, bottom: -50, backgroundColor: 'rgba(227,100,20,0.12)' },
   linha: { flexDirection: 'row', alignItems: 'center', gap: espaco.md },
   marca: { width: 48, height: 48 },
-  nome: { fontFamily: familia.titulo, fontSize: 30, color: cores.sobrePrimaria },
+  nome: { fontFamily: familia.titulo, fontSize: 30, color: '#FFFFFF' },
   frase: { ...fonte.corpo, fontSize: 17, color: '#D5E6EA', maxWidth: 320 },
-});
+}));

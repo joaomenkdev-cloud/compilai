@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { cores, espaco, familia, raio } from '@/constants/tema';
+import { cores, espaco, familia, raio, estiloTema } from '@/constants/tema';
 
 // Barra de busca do cabeçalho (só no computador): leva para Explorar,
 // onde a busca de pessoas e posts acontece de verdade.
@@ -21,7 +21,7 @@ export function BarraBusca() {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   barra: {
     width: 360,
     maxWidth: '100%',
@@ -36,4 +36,4 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espaco.lg,
   },
   texto: { fontFamily: familia.regular, fontSize: 14, color: cores.textoSuave },
-});
+}));

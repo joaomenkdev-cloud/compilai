@@ -1,7 +1,7 @@
 import { DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
 import { SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
 import { useFonts } from 'expo-font';
-import { DefaultTheme, Stack, ThemeProvider, type ErrorBoundaryProps } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, type ErrorBoundaryProps } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
@@ -11,21 +11,25 @@ import { EstadoErro } from '@/components/EstadoErro';
 import { TelaMarca } from '@/components/TelaMarca';
 import { cores, espaco } from '@/constants/tema';
 import { AuthProvider, useAuth } from '@/contexts/AuthProvider';
+import { TemaProvider, useTema } from '@/contexts/TemaProvider';
 import { abrirBanco } from '@/lib/db';
 
-// Tema da navegação com as cores do app: o fundo creme aparece também nas bordas
-// e atrás da barra de abas (sem o cinza padrão).
-const temaNavegacao = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    background: cores.fundo,
-    card: cores.superficie,
-    primary: cores.primaria,
-    text: cores.texto,
-    border: cores.borda,
-  },
-};
+// Tema da navegação com as cores do app: o fundo aparece também nas bordas
+// e atrás da barra de abas (sem o cinza padrão). Recalculado a cada troca de esquema.
+function criarTemaNavegacao(escuro: boolean) {
+  const base = escuro ? DarkTheme : DefaultTheme;
+  return {
+    ...base,
+    colors: {
+      ...base.colors,
+      background: cores.fundo,
+      card: cores.superficie,
+      primary: cores.primaria,
+      text: cores.texto,
+      border: cores.borda,
+    },
+  };
+}
 
 // Mantém a splash nativa na tela até a primeira tela em React estar pronta.
 SplashScreen.preventAutoHideAsync();
@@ -78,13 +82,24 @@ export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
   );
 }
 
-export default function LayoutRaiz() {
+function Conteudo() {
+  const { esquema } = useTema();
+  const escuro = esquema === 'escuro';
   return (
-    <ThemeProvider value={temaNavegacao}>
+    <ThemeProvider value={criarTemaNavegacao(escuro)}>
       <AuthProvider>
-        <StatusBar style="dark" />
-        <Rotas />
+        <StatusBar style={escuro ? 'light' : 'dark'} />
+        {/* key: ao trocar claro/escuro, as telas são refeitas com as cores novas. */}
+        <Rotas key={esquema} />
       </AuthProvider>
     </ThemeProvider>
+  );
+}
+
+export default function LayoutRaiz() {
+  return (
+    <TemaProvider>
+      <Conteudo />
+    </TemaProvider>
   );
 }

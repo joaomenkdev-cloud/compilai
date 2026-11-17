@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { cores, espaco, fonte, raio } from '@/constants/tema';
+import { cores, espaco, fonte, raio, estiloTema } from '@/constants/tema';
 
 type Props = {
   titulo: string;
@@ -22,7 +22,7 @@ export function EstadoVazio({ titulo, mensagem, icone = 'sparkles-outline' }: Pr
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   caixa: {
     paddingVertical: espaco.xxl,
     paddingHorizontal: espaco.xl,
@@ -44,4 +44,4 @@ const estilos = StyleSheet.create({
   },
   titulo: { ...fonte.subtitulo, color: cores.primaria, textAlign: 'center' },
   mensagem: { ...fonte.corpo, color: cores.textoSuave, textAlign: 'center' },
-});
+}));

@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { areaToque, cores, espaco } from '@/constants/tema';
+import { areaToque, cores, espaco, estiloTema } from '@/constants/tema';
 
 // Seta de voltar para o cabeçalho das telas de detalhe (post, pessoa, editar perfil).
 // Se não houver histórico (ex.: abriu direto pelo aviso), volta para o início.
@@ -20,7 +20,7 @@ export function BotaoVoltar() {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   botao: {
     width: areaToque,
     height: areaToque,
@@ -28,4 +28,4 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+}));

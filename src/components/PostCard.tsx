@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/Avatar';
 import { BotaoCurtir } from '@/components/BotaoCurtir';
-import { areaToque, cores, espaco, familia, fonte, pressionado, raio, sombra } from '@/constants/tema';
+import { areaToque, cores, espaco, familia, fonte, pressionado, raio, sombra, estiloTema } from '@/constants/tema';
 import { tempoRelativo } from '@/lib/datas';
 import type { Post } from '@/services/postService';
 
@@ -82,7 +82,7 @@ export const PostCard = memo(function PostCard({ post, curtindo, aoCurtir, noDet
   );
 });
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   card: {
     backgroundColor: cores.superficie,
     borderRadius: raio.card,
@@ -114,4 +114,4 @@ const estilos = StyleSheet.create({
     gap: 6,
   },
   textoComentarios: { fontFamily: familia.medio, fontSize: 14, color: cores.texto },
-});
+}));

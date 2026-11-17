@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Botao } from '@/components/Botao';
-import { cores, espaco, fonte, raio } from '@/constants/tema';
+import { cores, espaco, fonte, raio, estiloTema } from '@/constants/tema';
 
 type Props = { mensagem: string; aoTentarDeNovo?: () => void };
 
@@ -22,7 +22,7 @@ export function EstadoErro({ mensagem, aoTentarDeNovo }: Props) {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   caixa: {
     padding: espaco.lg,
     borderRadius: raio.card,
@@ -34,4 +34,4 @@ const estilos = StyleSheet.create({
   linha: { flexDirection: 'row', alignItems: 'center', gap: espaco.sm },
   titulo: { ...fonte.subtitulo, color: cores.erro },
   mensagem: { ...fonte.corpo, color: cores.texto },
-});
+}));

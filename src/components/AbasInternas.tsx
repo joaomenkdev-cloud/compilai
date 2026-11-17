@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { areaToque, cores, espaco, familia, raio, sombra } from '@/constants/tema';
+import { areaToque, cores, espaco, familia, raio, sombra, estiloTema } from '@/constants/tema';
 
 type Aba<T extends string> = { id: T; rotulo: string };
 
@@ -37,7 +37,7 @@ export function AbasInternas<T extends string>({ abas, selecionada, aoMudar }: P
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   trilho: {
     flexDirection: 'row',
     backgroundColor: cores.superficieSuave,
@@ -57,4 +57,4 @@ const estilos = StyleSheet.create({
   texto: { fontFamily: familia.medio, fontSize: 15, color: cores.textoSuave },
   textoAtivo: { fontFamily: familia.negrito, color: cores.primaria },
   marcador: { width: 18, height: 3, borderRadius: 2, backgroundColor: cores.destaque, marginTop: 3 },
-});
+}));

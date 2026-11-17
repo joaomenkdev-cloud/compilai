@@ -7,7 +7,7 @@ import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
-import { areaToque, cores, espaco, fonte, raio, familia, sombra, larguraLeitura } from '@/constants/tema';
+import { areaToque, cores, espaco, fonte, raio, familia, sombra, larguraLeitura, estiloTema } from '@/constants/tema';
 import { useAvisos } from '@/contexts/AvisosProvider';
 import { tempoRelativo } from '@/lib/datas';
 import { mensagemDeErro } from '@/lib/erros';
@@ -164,7 +164,7 @@ export default function Notificacoes() {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   fundo: { flex: 1, backgroundColor: cores.fundo },
   conteudo: { ...larguraLeitura, padding: espaco.lg, paddingBottom: espaco.xxl },
   cabecalho: { gap: espaco.lg, marginBottom: espaco.sm },
@@ -180,7 +180,7 @@ const estilos = StyleSheet.create({
     borderRadius: raio.card,
     ...sombra.card,
   },
-  avisoNovo: { borderColor: cores.destaque, borderWidth: 1.5, backgroundColor: '#FFF9F4' },
+  avisoNovo: { borderColor: cores.destaque, borderWidth: 1.5, backgroundColor: cores.destaqueClaro },
   circuloIcone: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   circuloCurtida: { backgroundColor: cores.destaqueClaro },
   circuloComentario: { backgroundColor: cores.primariaClara },
@@ -204,4 +204,4 @@ const estilos = StyleSheet.create({
   fraseNova: { fontFamily: familia.negrito },
   trecho: { ...fonte.pequena, color: cores.textoSuave },
   data: { ...fonte.pequena, color: cores.textoSuave },
-});
+}));

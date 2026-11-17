@@ -7,7 +7,7 @@ import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { CampoTexto } from '@/components/CampoTexto';
 import { EstadoErro } from '@/components/EstadoErro';
 import { TelaEntrada } from '@/components/TelaEntrada';
-import { areaToque, cores, espaco, familia, fonte } from '@/constants/tema';
+import { areaToque, cores, espaco, familia, fonte, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { validarEmail } from '@/lib/validacao';
 
@@ -73,7 +73,7 @@ export default function Login() {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   rodape: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: espaco.sm, flexWrap: 'wrap' },
   textoRodape: { ...fonte.corpo, color: cores.textoSuave },
   link: {
@@ -84,4 +84,4 @@ const estilos = StyleSheet.create({
     minHeight: areaToque,
     textDecorationLine: 'underline',
   },
-});
+}));

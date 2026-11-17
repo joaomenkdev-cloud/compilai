@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/Avatar';
-import { cores, espaco, familia, fonte, raio, sombra } from '@/constants/tema';
+import { cores, espaco, familia, fonte, raio, sombra, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useAvisos } from '@/contexts/AvisosProvider';
 import { listarPessoas, type Perfil } from '@/services/profileService';
@@ -99,7 +99,7 @@ export function ColunaComunidade() {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   coluna: { width: 320, flexGrow: 0, flexShrink: 0 },
   conteudo: { paddingVertical: espaco.lg, paddingRight: espaco.lg, gap: espaco.lg },
   cartao: { backgroundColor: cores.superficie, borderRadius: raio.card, padding: espaco.lg, gap: espaco.md },
@@ -136,4 +136,4 @@ const estilos = StyleSheet.create({
   bio: { ...fonte.pequena, fontSize: 12, color: cores.textoSuave },
   link: { minHeight: 44, justifyContent: 'center', alignItems: 'center' },
   textoLink: { fontFamily: familia.negrito, fontSize: 14, color: cores.primaria, textDecorationLine: 'underline' },
-});
+}));

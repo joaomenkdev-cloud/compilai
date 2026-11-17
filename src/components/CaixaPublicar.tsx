@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { Avatar } from '@/components/Avatar';
-import { cores, espaco, familia, raio, sombra } from '@/constants/tema';
+import { cores, espaco, familia, raio, sombra, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 
 // Atalho no topo do feed: "No que você está trabalhando?" → abre Publicar.
@@ -41,7 +41,7 @@ export function CaixaPublicar() {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   caixa: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -70,4 +70,4 @@ const estilos = StyleSheet.create({
   },
   botaoIcone: { width: 44, paddingHorizontal: 0, justifyContent: 'center' },
   textoBotao: { fontFamily: familia.negrito, fontSize: 14, color: cores.sobrePrimaria },
-});
+}));

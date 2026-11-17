@@ -11,7 +11,7 @@ import { CampoTexto } from '@/components/CampoTexto';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
 import { Tela } from '@/components/Tela';
-import { cores, espaco, fonte, raio, familia, sombra } from '@/constants/tema';
+import { cores, espaco, fonte, raio, familia, sombra, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { horaCurta } from '@/lib/datas';
 import { ehErroDeRede, mensagemDeErro } from '@/lib/erros';
@@ -177,7 +177,7 @@ export default function Publicar() {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   campoGrande: { minHeight: 160, paddingTop: espaco.md },
   contador: { ...fonte.pequena, color: cores.textoSuave, textAlign: 'right', marginTop: -espaco.sm },
   contadorErro: { color: cores.erro, fontFamily: familia.negrito },
@@ -198,7 +198,7 @@ const estilos = StyleSheet.create({
     borderColor: cores.sucesso,
     borderRadius: raio.campo,
     padding: espaco.md,
-    backgroundColor: '#E8F5EE',
+    backgroundColor: cores.sucessoClaro,
   },
   textoSucesso: { ...fonte.corpo, fontFamily: familia.negrito, color: cores.sucesso },
   cartaoRascunho: {
@@ -210,4 +210,4 @@ const estilos = StyleSheet.create({
   },
   rotulo: { ...fonte.sobrancelha, color: cores.destaqueTexto },
   textoRascunho: { ...fonte.corpo, color: cores.texto },
-});
+}));

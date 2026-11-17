@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { TopoMarca } from '@/components/TopoMarca';
-import { cores, espaco, sombra } from '@/constants/tema';
+import { cores, espaco, sombra, estiloTema } from '@/constants/tema';
 
 // Layout das telas públicas (Entrar e Criar conta): topo com a marca e o
 // formulário num cartão branco que "sobe" sobre a faixa azul.
@@ -19,7 +19,7 @@ export function TelaEntrada({ frase, children }: { frase: string; children: Reac
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   fundo: { flex: 1, backgroundColor: cores.fundo },
   rolagem: { paddingBottom: espaco.xxl },
   margem: { paddingHorizontal: espaco.lg, marginTop: -espaco.xxl },
@@ -33,4 +33,4 @@ const estilos = StyleSheet.create({
     maxWidth: 480,
     alignSelf: 'center',
   },
-});
+}));

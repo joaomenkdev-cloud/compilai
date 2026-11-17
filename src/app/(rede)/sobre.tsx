@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { CabecalhoTela } from '@/components/CabecalhoTela';
 import { Tela } from '@/components/Tela';
-import { cores, espaco, fonte, raio, familia, sombra } from '@/constants/tema';
+import { cores, espaco, fonte, raio, familia, sombra, estiloTema } from '@/constants/tema';
 
 const COMBINADOS = [
   {
@@ -107,7 +107,7 @@ function Linha({ rotulo, valor }: { rotulo: string; valor: string }) {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   cartaoMarca: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -144,4 +144,4 @@ const estilos = StyleSheet.create({
   tituloCombinado: { ...fonte.rotulo, fontSize: 15, color: cores.texto },
   linha: { gap: 2 },
   rotulo: { ...fonte.sobrancelha, color: cores.destaqueTexto },
-});
+}));

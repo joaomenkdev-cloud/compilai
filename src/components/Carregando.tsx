@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Animated, StyleSheet, Text, View } from 'react-native';
 
-import { cores, espaco, fonte, raio, sombra } from '@/constants/tema';
+import { cores, espaco, fonte, raio, sombra, estiloTema } from '@/constants/tema';
 
 // Esqueleto de um cartão (formato do PostCard) que "pulsa" enquanto carrega.
 // Mais agradável que só uma rodinha, e o texto continua lá para o leitor de tela.
@@ -45,11 +45,11 @@ export function Carregando({ texto = 'Carregando…', cartoes = 3 }: { texto?: s
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   caixa: { gap: espaco.md },
   texto: { ...fonte.pequena, color: cores.textoSuave, textAlign: 'center' },
   cartao: { backgroundColor: cores.superficie, borderRadius: raio.card, padding: espaco.lg, gap: espaco.md },
   linhaTopo: { flexDirection: 'row', alignItems: 'center', gap: espaco.md },
   circulo: { width: 44, height: 44, borderRadius: 22, backgroundColor: cores.superficieSuave },
   barra: { height: 12, borderRadius: 6, backgroundColor: cores.superficieSuave },
-});
+}));

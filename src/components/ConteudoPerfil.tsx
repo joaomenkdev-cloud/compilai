@@ -10,7 +10,7 @@ import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
 import { PostCard } from '@/components/PostCard';
-import { cores, espaco, fonte, raio, sombra, familia, larguraLeitura } from '@/constants/tema';
+import { cores, espaco, fonte, raio, sombra, familia, larguraLeitura, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
 import { mensagemDeErro } from '@/lib/erros';
@@ -173,7 +173,7 @@ export function ConteudoPerfil({ pessoaId, ehProprio }: Props) {
   );
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   fundo: { flex: 1, backgroundColor: cores.fundo },
   conteudo: { ...larguraLeitura, padding: espaco.lg, paddingBottom: espaco.xxl },
   cabecalho: { gap: espaco.lg, marginBottom: espaco.lg },
@@ -229,4 +229,4 @@ const estilos = StyleSheet.create({
   rotulo: { ...fonte.sobrancelha, color: cores.destaqueTexto, marginTop: espaco.sm },
   valor: { ...fonte.corpo, color: cores.texto },
   vazio: { color: cores.textoSuave, fontStyle: 'italic' },
-});
+}));

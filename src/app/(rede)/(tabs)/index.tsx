@@ -11,7 +11,7 @@ import { Carregando } from '@/components/Carregando';
 import { EstadoErro } from '@/components/EstadoErro';
 import { EstadoVazio } from '@/components/EstadoVazio';
 import { PostCard } from '@/components/PostCard';
-import { cores, espaco, larguraLeitura } from '@/constants/tema';
+import { cores, espaco, larguraLeitura, estiloTema } from '@/constants/tema';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useCurtir } from '@/hooks/useCurtir';
 import { useLayout } from '@/hooks/useLayout';
@@ -174,9 +174,9 @@ export default function Inicio() {
   return feed;
 }
 
-const estilos = StyleSheet.create({
+const estilos = estiloTema(() => StyleSheet.create({
   fundo: { flex: 1, backgroundColor: cores.fundo },
   colunas: { flex: 1, flexDirection: 'row', backgroundColor: cores.fundo },
   conteudo: { ...larguraLeitura, padding: espaco.lg, paddingBottom: espaco.xxl },
   cabecalho: { gap: espaco.lg, marginBottom: espaco.lg },
-});
+}));
